@@ -70,16 +70,16 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
 
 ## Product Tour
 
-### Dashboard — Operator Workspace
-
-<p align="center">
-  <img src="docs/images/login.png" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
-</p>
-
 ### Sign-in — Google OAuth + Anonymous Guest Mode
 
 <p align="center">
   <img src="docs/images/dashboard.png" alt="SportsGuard sign-in screen with Google sign-in and guest mode" width="100%" />
+</p>
+
+### Dashboard — Operator Workspace
+
+<p align="center">
+  <img src="docs/images/login.png" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
 </p>
 
 ---
