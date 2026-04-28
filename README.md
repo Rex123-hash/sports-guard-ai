@@ -63,7 +63,7 @@ By the time a notice is filed, the pirated copy has already done its damage.
 |---|---|
 | **Frontend** | https://sports-guard-ai.web.app |
 | **Backend API** | https://sportsguard-api-712383807173.us-central1.run.app |
-| **Health Check** | [/health](https://sportsguard-api-712383807173.us-central1.run.app/health) |
+| **Health Check** | https://sportsguard-api-712383807173.us-central1.run.app/health |
 
 Sign in with Google or pick **Continue as Guest** to skip auth and try the full pipeline.
 
@@ -121,25 +121,77 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
 **Detection pipeline inside `/check`:**
 
 ```
-URL  →  SSRF guard  →  axios download  →  dHash 64-bit  →  Hamming search
-        (assertSafe                        (9×8 grid)         (Firestore
-         PublicUrl)                                            getAllAssets)
-                                                                    │
-                                              < 80% ───────────────┤
-                                              NO_MATCH              │ ≥ 80%
-                                                                    ▼
-                                              Fetch original (Cloud Storage)
-                                                                    │
-                                                                    ▼
-                                              Gemini 2.0 Flash (Vertex AI)
-                                              analyzeImages(original, suspected)
-                                                                    ▼
-                                              Score = 0.4·dHash + 0.6·Gemini
-                                                                    │
-                                       ┌────────────────────────────┤
-                                       ▼                            ▼
-                                  Firestore log            Evidence + DMCA draft
-                                  saveDetection()
+ ┌─────────────────────────────────────────────────────────────────────┐
+ │                        /check  request                              │
+ │                  { url: "https://suspect-site/…" }                  │
+ └──────────────────────────────┬──────────────────────────────────────┘
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │      SSRF  guard      │
+                    │  assertSafePublicUrl  │  ← blocks localhost, RFC-1918,
+                    └──────────┬────────────┘    metadata IPs, bad schemes
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │   axios  download     │
+                    │  (content-type check) │
+                    └──────────┬────────────┘
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │   dHash  64-bit       │
+                    │  9 × 8 grayscale grid │
+                    │  adjacent-pixel diff  │
+                    └──────────┬────────────┘
+                                │
+                                ▼
+                    ┌───────────────────────┐
+                    │   Hamming  search     │
+                    │  Firestore getAllAssets│
+                    └──────────┬────────────┘
+                                │
+              ┌─────────────────┴──────────────────┐
+              │ similarity < 80 %                   │ similarity ≥ 80 %
+              ▼                                     ▼
+       ╔══════════════╗              ┌───────────────────────────┐
+       ║  NO_MATCH    ║              │  Fetch original frame     │
+       ║  verdict     ║              │  Cloud Storage  →  Buffer │
+       ╚══════════════╝              └──────────────┬────────────┘
+                                                    │
+                                                    ▼
+                                     ┌───────────────────────────┐
+                                     │   Gemini 2.0 Flash        │
+                                     │   Vertex AI               │
+                                     │  analyzeImages(orig, sus) │
+                                     └──────────────┬────────────┘
+                                                    │
+                                                    ▼
+                                     ┌───────────────────────────┐
+                                     │  Weighted score           │
+                                     │  0.4 × dHash              │
+                                     │  0.6 × Gemini             │
+                                     └──────────────┬────────────┘
+                                                    │
+                         ┌──────────────────────────┼──────────────────────────┐
+                         │  score ≥ 85 %            │  70 – 84 %              │  < 70 %
+                         ▼                          ▼                          ▼
+                   ╔══════════╗             ╔══════════════╗            ╔══════════╗
+                   ║  PIRACY  ║             ║    REVIEW    ║            ║  CLEAN   ║
+                   ╚═════┬════╝             ╚══════┬═══════╝            ╚══════════╝
+                         │                         │
+                         └────────────┬────────────┘
+                                      ▼
+                         ┌────────────────────────────┐
+                         │  saveDetection()           │
+                         │  Firestore  ·  audit log   │
+                         └────────────────────────────┘
+                                      │
+                                      ▼
+                         ┌────────────────────────────┐
+                         │  Evidence report           │
+                         │  + DMCA draft (if piracy)  │
+                         └────────────────────────────┘
 ```
 
 ---
