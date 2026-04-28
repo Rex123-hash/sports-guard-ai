@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { SAMPLE_ASSETS } from './data/sample-data.jsx';
+import { SAMPLE_ASSETS } from './data/sample-data.js';
 import { SG_API } from './services/api.js';
 import { onAuthStateChanged, signOut } from './services/firebase-auth.js';
 

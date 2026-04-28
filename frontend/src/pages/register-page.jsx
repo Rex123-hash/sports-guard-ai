@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Icon, Placeholder } from '../components/primitives.jsx';
 import { SG_API } from '../services/api.js';
-import { SPORTS, RIGHTS_HOLDERS } from '../data/sample-data.jsx';
+import { SPORTS, RIGHTS_HOLDERS } from '../data/sample-data.js';
 
 export default function Register({ onRegistered, onNav }) {
   const [step, setStep] = useState('idle');

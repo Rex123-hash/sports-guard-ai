@@ -1,5 +1,5 @@
 import { Icon } from '../components/primitives.jsx';
-import { CLOUD_STACK } from '../data/sample-data.jsx';
+import { CLOUD_STACK } from '../data/sample-data.js';
 
 export default function Guide({ onNav }) {
   return (

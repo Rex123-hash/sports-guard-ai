@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Icon, Placeholder, ConfDial, buildEvidenceReport, buildEvidenceReportHtml, buildDmcaNotice, copyTextToClipboard, downloadHtmlFile, downloadTextFile } from '../components/primitives.jsx';
 import { SG_API } from '../services/api.js';
-import { PIPELINE_STEPS } from '../data/sample-data.jsx';
+import { PIPELINE_STEPS } from '../data/sample-data.js';
 
 export default function CheckURL({ assets, onDetection }) {
   const [url, setUrl] = useState('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800');
