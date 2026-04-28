@@ -45,7 +45,7 @@ export default function Guide({ onNav }) {
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Gemini Verification</h3>
-              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Gemini 1.5 Flash on Vertex AI produces an explicit authenticity verdict and downloadable verification report for demos and submissions.</p>
+              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Gemini 2.5 Flash on Vertex AI produces an explicit authenticity verdict and downloadable verification report for demos and submissions.</p>
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Evidence Export</h3>
