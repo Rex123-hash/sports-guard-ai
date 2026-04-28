@@ -152,4 +152,4 @@ SportsGuard AI aligns with the Solution Challenge theme by combining:
 
 ---
 
-Built by Team Hackfinity for Solution Challenge 2026.
+Built by **Team Hackwin** for Solution Challenge 2026.
