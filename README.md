@@ -62,7 +62,6 @@ By the time a notice is filed, the pirated copy has already done its damage.
 | | URL |
 |---|---|
 | **Frontend** | https://sports-guard-ai.web.app |
-| **Backend API** | https://sportsguard-api-712383807173.us-central1.run.app |
 | **Health Check** | https://sportsguard-api-712383807173.us-central1.run.app/health |
 
 Sign in with Google or pick **Continue as Guest** to skip auth and try the full pipeline.
