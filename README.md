@@ -124,7 +124,7 @@ URL  ──→  SSRF guard  ──→  axios download  ──→  dHash 64-bit  
           (assertSafe                            (9×8 grid)          (Firestore
            PublicUrl)                                                 getAllAssets)
                                                                            │
-                                                     < 80% ───────────────┤
+                                                     < 80%  ───────────────┤
                                                      NO_MATCH              │ ≥ 80%
                                                                            ▼
                                                            Fetch original (Cloud Storage)
