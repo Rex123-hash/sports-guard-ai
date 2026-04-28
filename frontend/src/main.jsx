@@ -49,10 +49,39 @@ function App({ user }) {
 
   useEffect(() => {
     function onKey(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      const map = { h: 'landing', d: 'dashboard', r: 'register', c: 'check', v: 'verify', g: 'guide' };
-      const k = e.key.toLowerCase();
-      if (map[k]) { setPage(map[k]); setSidebarOpen(false); }
+      const tag = e.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      let nextPage = null;
+      switch (e.code) {
+        case 'KeyH':
+          nextPage = 'landing';
+          break;
+        case 'KeyD':
+          nextPage = 'dashboard';
+          break;
+        case 'KeyP':
+          nextPage = 'register';
+          break;
+        case 'KeyS':
+          nextPage = 'check';
+          break;
+        case 'KeyV':
+          nextPage = 'verify';
+          break;
+        case 'Slash':
+          if (e.shiftKey) nextPage = 'guide';
+          break;
+        default:
+          break;
+      }
+
+      if (nextPage) {
+        e.preventDefault();
+        setPage(nextPage);
+        setSidebarOpen(false);
+      }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
