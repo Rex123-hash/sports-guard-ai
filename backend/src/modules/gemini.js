@@ -1,6 +1,7 @@
 const { GoogleGenAI } = require('@google/genai');
 
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+const PRIMARY_MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const FALLBACK_MODEL = 'gemini-2.5-flash';
 
 const ai = new GoogleGenAI({
   vertexai: true,
@@ -49,8 +50,8 @@ async function analyzeImages(originalBuffer, suspectedBuffer) {
   const originalMime = detectMime(originalBuffer);
   const suspectedMime = detectMime(suspectedBuffer);
 
-  const response = await ai.models.generateContent({
-    model: MODEL,
+  const response = await generateWithFallback({
+    model: PRIMARY_MODEL,
     config: { maxOutputTokens: 512, temperature: 0.1, topP: 0.9 },
     contents: [
       {
@@ -78,8 +79,8 @@ async function describeImage(imageBuffer) {
   const base64 = imageBuffer.toString('base64');
   const mime = detectMime(imageBuffer);
 
-  const response = await ai.models.generateContent({
-    model: MODEL,
+  const response = await generateWithFallback({
+    model: PRIMARY_MODEL,
     contents: [
       {
         role: 'user',
@@ -92,6 +93,27 @@ async function describeImage(imageBuffer) {
   });
 
   return response.candidates[0].content.parts[0].text.trim();
+}
+
+async function generateWithFallback(request) {
+  try {
+    return await ai.models.generateContent(request);
+  } catch (error) {
+    const message = String(error?.message || '');
+    const shouldFallback =
+      request.model !== FALLBACK_MODEL &&
+      (message.includes('NOT_FOUND') ||
+        message.includes('was not found') ||
+        message.includes('Publisher Model') ||
+        message.includes('does not have access'));
+
+    if (!shouldFallback) throw error;
+
+    return ai.models.generateContent({
+      ...request,
+      model: FALLBACK_MODEL,
+    });
+  }
 }
 
 function parseGeminiResponse(text) {

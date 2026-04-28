@@ -17,7 +17,7 @@
   </p>
 
   <p>
-    <img src="https://img.shields.io/badge/Gemini%202.0%20Flash-8E75B2?style=flat-square&logo=googlebard&logoColor=white" />
+    <img src="https://img.shields.io/badge/Gemini%202.5%20Flash-8E75B2?style=flat-square&logo=googlebard&logoColor=white" />
     <img src="https://img.shields.io/badge/Vertex%20AI-1A73E8?style=flat-square&logo=googlecloud&logoColor=white" />
     <img src="https://img.shields.io/badge/Cloud%20Vision-34A853?style=flat-square&logo=googlecloud&logoColor=white" />
     <img src="https://img.shields.io/badge/Cloud%20Run-0F9D58?style=flat-square&logo=googlecloud&logoColor=white" />
@@ -51,7 +51,7 @@ By the time a notice is filed, the pirated copy has already done its damage.
 1. Rights holder registers an official broadcast frame → SportsGuard computes a 64-bit dHash fingerprint, runs Cloud Vision safety check, and stores frame + metadata.
 2. Operator submits a suspicious image URL → SSRF guard validates the URL, backend fetches the image, recomputes the dHash.
 3. Hamming-distance search across all registered assets finds the best candidate match.
-4. If similarity ≥ 80%, **Gemini 2.0 Flash** on Vertex AI performs multimodal visual adjudication comparing original vs suspected image.
+4. If similarity ≥ 80%, **Gemini 2.5 Flash** on Vertex AI performs multimodal visual adjudication comparing original vs suspected image.
 5. A weighted score (`0.4 × dHash + 0.6 × Gemini`) classifies the result: **piracy ≥ 85% · review 70–84% · clean < 70%**.
 6. One click exports the evidence report or generates a populated DMCA notice.
 
@@ -78,6 +78,8 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
 
 ### Dashboard — Operator Workspace
 
+The Metrics page now reflects live Firestore-backed assets and detections instead of seeded example domains or placeholder counts.
+
 <p align="center">
   <img src="docs/images/dashboard.png?v=2" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
 </p>
@@ -102,13 +104,13 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                  Backend API · Cloud Run (Node.js)               │
-│   Express routes:  /register   /check   /verify   /detections    │
+│   Express routes:  /register   /check   /verify   /detections   /assets │
 └──┬─────────────┬─────────────┬──────────────┬───────────────┬────┘
    │             │             │              │               │
    ▼             ▼             ▼              ▼               ▼
 ┌──────┐  ┌────────────┐  ┌──────────┐  ┌────────────┐  ┌──────────┐
 │dHash │  │Cloud Vision│  │  Gemini  │  │  Firestore │  │   Cloud  │
-│ 64-  │  │safeSearch  │  │   2.0    │  │  detections│  │  Storage │
+│ 64-  │  │safeSearch  │  │   2.5    │  │  detections│  │  Storage │
 │ bit  │  │ OCR·labels │  │  Flash   │  │   assets   │  │  frames  │
 └──────┘  └────────────┘  └──────────┘  └────────────┘  └──────────┘
                           (Vertex AI)
@@ -130,7 +132,7 @@ URL  ──→  SSRF guard  ──→  axios download  ──→  dHash 64-bit  
                                                            Fetch original (Cloud Storage)
                                                                            │
                                                                            ▼
-                                                           Gemini 2.0 Flash  ·  Vertex AI
+                                                           Gemini 2.5 Flash  ·  Vertex AI
                                                            analyzeImages(original, suspected)
                                                                            │
                                                                            ▼
@@ -148,7 +150,7 @@ URL  ──→  SSRF guard  ──→  axios download  ──→  dHash 64-bit  
 
 | Service | Role in SportsGuard AI |
 |---|---|
-| **Gemini 2.0 Flash** *(Vertex AI)* | Multimodal similarity reasoning · image description on register · evidence narration |
+| **Gemini 2.5 Flash** *(Vertex AI)* | Multimodal similarity reasoning · image description on register · evidence narration |
 | **Cloud Vision API** | Safety check on register (`safeSearch`) · OCR + label detection on verify |
 | **Cloud Run** | Stateless Node.js API · auto-scales per request |
 | **Cloud Firestore** | Asset registry · detection history · audit trail |
@@ -161,10 +163,10 @@ URL  ──→  SSRF guard  ──→  axios download  ──→  dHash 64-bit  
 ## Features
 
 ### Asset Registration
-Upload an official broadcast frame. Cloud Vision runs a content safety check, then a 64-bit difference hash (dHash) is computed via 9×8 grayscale adjacent-pixel comparison. Gemini 2.0 Flash generates an image description. All three run in parallel before the asset is saved to Firestore + Cloud Storage. The dHash fingerprint survives JPEG recompression, cropping, brightness/contrast shifts, and minor watermark overlays.
+Upload an official broadcast frame. Cloud Vision runs a content safety check, then a 64-bit difference hash (dHash) is computed via 9×8 grayscale adjacent-pixel comparison. Gemini 2.5 Flash generates an image description. All three run in parallel before the asset is saved to Firestore + Cloud Storage. The dHash fingerprint survives JPEG recompression, cropping, brightness/contrast shifts, and minor watermark overlays.
 
 ### URL Piracy Detection
-Paste any public image URL. Backend SSRF-guards the URL (`assertSafePublicUrl`), fetches the image, computes its dHash, runs Hamming-distance search across all registered assets in Firestore, then sends the best match (≥ 80% similarity) to Gemini 2.0 Flash on Vertex AI for multimodal adjudication. Cloud Vision is **not** called in this route.
+Paste any public image URL. Backend SSRF-guards the URL (`assertSafePublicUrl`), fetches the image, computes its dHash, runs Hamming-distance search across all registered assets in Firestore, then sends the best match (≥ 80% similarity) to Gemini 2.5 Flash on Vertex AI for multimodal adjudication. Cloud Vision is **not** called in this route.
 
 ### Frame Verification
 Upload a frame to read its watermark and provenance signals. Cloud Vision OCR surfaces broadcaster overlays, timecodes, and copyright marks. The result either confirms a licensed broadcast feed or flags the source as unverified.
@@ -175,6 +177,9 @@ Every detection produces a structured evidence report and, for confirmed piracy,
 ### Detection Log
 Permanent record of every adjudicated URL — searchable, sortable, and exportable. Live polling keeps the dashboard in sync with new detections.
 
+### Live Metrics
+Cards, sport breakdown, and top offending source domains are derived from actual `/api/assets` and `/api/detections` responses instead of seeded demo rows.
+
 ---
 
 ## Tech Stack
@@ -183,7 +188,7 @@ Permanent record of every adjudicated URL — searchable, sortable, and exportab
 |---|---|
 | **Frontend** | React 18 · Vite ES modules · Firebase Hosting |
 | **Backend** | Node.js 20 · Express · Docker · Cloud Run |
-| **AI / Vision** | Gemini 2.0 Flash on Vertex AI · Cloud Vision API |
+| **AI / Vision** | Gemini 2.5 Flash on Vertex AI · Cloud Vision API |
 | **Hashing** | 64-bit difference hash (dHash · 9×8 adjacent-pixel grid) |
 | **Persistence** | Cloud Firestore (NoSQL) · Cloud Storage |
 | **Auth** | Firebase Auth — Google OAuth + Anonymous |
@@ -272,6 +277,7 @@ cd frontend && npm run build       # Vite production build
 | `POST` | `/check`   | Scan a suspicious URL · returns verdict, scores, reasoning |
 | `POST` | `/verify`  | OCR + watermark check on uploaded image |
 | `GET`  | `/detections` | Paginated detection history |
+| `GET`  | `/assets` | Active protected asset registry |
 | `GET`  | `/health` | Service health check |
 
 ---
@@ -283,10 +289,10 @@ sports-guard-ai/
 ├── backend/
 │   ├── src/
 │   │   ├── index.js                    # Express bootstrap
-│   │   ├── routes/                     # /register /check /verify /detections
+│   │   ├── routes/                     # /register /check /verify /detections /assets
 │   │   └── modules/
 │   │       ├── phash.js                # 64-bit dHash (9×8 adjacent-pixel diff)
-│   │       ├── gemini.js               # Vertex AI · Gemini 2.0 Flash
+│   │       ├── gemini.js               # Vertex AI · Gemini 2.5 Flash
 │   │       ├── vision.js               # Cloud Vision OCR + logo
 │   │       ├── firestore.js            # Asset & detection storage
 │   │       ├── storage.js              # Cloud Storage uploads
@@ -308,7 +314,7 @@ sports-guard-ai/
 | Criterion | How SportsGuard AI delivers |
 |---|---|
 | **Real Google Cloud usage** | Five GCP services in production · live URLs above |
-| **Generative AI integration** | Gemini 2.0 Flash on Vertex AI as the verdict authority |
+| **Generative AI integration** | Gemini 2.5 Flash on Vertex AI as the verdict authority |
 | **Track 1 — Digital Asset Protection** | End-to-end registration → detection → enforcement |
 | **Working prototype** | Deployed, browsable, demo-ready right now |
 | **Practical impact** | Compresses hours of manual proof collection into seconds |

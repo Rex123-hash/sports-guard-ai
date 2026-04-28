@@ -1,14 +1,37 @@
 import { useMemo, useState } from 'react';
 import { Icon, Counter, Sparkline, Placeholder, ConfBar } from '../components/primitives.jsx';
 
-export default function Dashboard({ assets, detections, onOpenDetection, onNav }) {
+export default function Dashboard({ assets, detections, stats, onOpenDetection, onNav }) {
   const [filter, setFilter] = useState('all');
 
   const filtered = filter === 'all' ? detections : detections.filter(d => d.type === filter);
-  const scansDone = detections.length;
+  const scansDone = Math.max(detections.length, stats?.totalDetections || 0);
   const threatsDetected = detections.filter(d => d.type === 'piracy').length;
+  const reviewQueue = detections.filter(d => d.type === 'review').length;
   const cleanScans = detections.filter(d => d.type === 'clean').length;
-  const successRate = scansDone === 0 ? 100 : Math.round((cleanScans / scansDone) * 100);
+  const successRate = detections.length === 0 ? 0 : Math.round((cleanScans / detections.length) * 100);
+
+  const sourceBreakdown = useMemo(() => {
+    const counts = {};
+    detections.forEach((d) => {
+      try {
+        const host = new URL(d.url).hostname.replace(/^www\./, '');
+        counts[host] = (counts[host] || 0) + 1;
+      } catch {
+        counts[d.url] = (counts[d.url] || 0) + 1;
+      }
+    });
+
+    const max = Math.max(...Object.values(counts), 1);
+    return Object.entries(counts)
+      .map(([domain, count]) => ({
+        domain,
+        count,
+        width: Math.max(12, Math.round((count / max) * 100)),
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }, [detections]);
 
   const breakdown = useMemo(() => {
     const counts = {};
@@ -16,13 +39,7 @@ export default function Dashboard({ assets, detections, onOpenDetection, onNav }
       const asset = assets.find(x => x.id === d.assetId);
       if (asset) counts[asset.sport] = (counts[asset.sport] || 0) + 1;
     });
-    if (Object.keys(counts).length === 0) {
-      return [
-        { sport: 'football', count: 12, pct: 55 },
-        { sport: 'tennis', count: 6, pct: 25 },
-        { sport: 'cricket', count: 4, pct: 20 },
-      ];
-    }
+    if (Object.keys(counts).length === 0) return [];
     const total = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
     return Object.entries(counts)
       .map(([k, v]) => ({ sport: k, count: v, pct: Math.round((v * 100) / total) }))
@@ -44,10 +61,10 @@ export default function Dashboard({ assets, detections, onOpenDetection, onNav }
 
       <div className="hero-grid">
         {[
-          { label: 'Total Scans Executed', value: scansDone > 0 ? scansDone : 142, delta: scansDone > 0 ? 'Live' : 'Last 24h', dir: 'up', spark: [6, 9, 8, 11, 10, 13, 14, 16, 18, 17, 19, 21], color: 'var(--sky)' },
-          { label: 'Piracy Threats', value: threatsDetected > 0 ? threatsDetected : 24, delta: 'Action Required', dir: 'up', spark: [3, 5, 7, 6, 9, 8, 11, 14, 12, 16, 18, 17], color: 'var(--coral)' },
-          { label: 'Assets Protected', value: assets.length, delta: 'Fully Active', dir: 'up', spark: [2, 3, 5, 4, 7, 6, 9, 8, 11, 10, 12, 14], color: 'var(--moss)' },
-          { label: 'Clean Rate', value: successRate > 0 && scansDone > 0 ? successRate : 85, delta: 'System Nominal', dir: 'up', spark: [14, 12, 11, 9, 10, 8, 7, 9, 8, 7, 6, 5], color: 'var(--pine)', suffix: '%' },
+          { label: 'Total Scans Executed', value: scansDone, delta: scansDone > 0 ? 'Live' : 'No scans yet', dir: 'up', spark: detections.length > 0 ? detections.map((_, i) => i + 1) : [0, 0, 0, 0], color: 'var(--sky)' },
+          { label: 'Piracy Threats', value: threatsDetected, delta: reviewQueue > 0 ? `${reviewQueue} in review` : 'Action required', dir: 'up', spark: detections.filter(d => d.type !== 'clean').map((_, i) => i + 1).concat(detections.filter(d => d.type !== 'clean').length ? [] : [0, 0, 0, 0]), color: 'var(--coral)' },
+          { label: 'Assets Protected', value: Math.max(assets.length, stats?.totalAssets || 0), delta: assets.length > 0 ? 'Fully active' : 'Awaiting registry', dir: 'up', spark: assets.map((_, i) => i + 1).concat(assets.length ? [] : [0, 0, 0, 0]), color: 'var(--moss)' },
+          { label: 'Clean Rate', value: successRate, delta: detections.length > 0 ? `${cleanScans} clean checks` : 'System warming up', dir: 'up', spark: detections.map(d => (d.type === 'clean' ? 1 : 0)).concat(detections.length ? [] : [0, 0, 0, 0]), color: 'var(--pine)', suffix: '%' },
         ].map((s, i) => (
           <div key={s.label} className={`stat fade-up delay-${i + 1}`}>
             <div className="stat-label"><span className="dot" style={{ background: s.color }} />{s.label}</div>
@@ -100,7 +117,11 @@ export default function Dashboard({ assets, detections, onOpenDetection, onNav }
           <div className="card fade-up delay-3">
             <div className="card-head"><h3>Threat by sport</h3><span className="mono" style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '0.12em' }}>30 DAYS</span></div>
             <div className="card-pad">
-              {breakdown.map((s, i) => (
+              {breakdown.length === 0 ? (
+                <div className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', padding: '10px 0' }}>
+                  No real detection mix yet. Run scans against registered assets to populate this view.
+                </div>
+              ) : breakdown.map((s, i) => (
                 <div key={s.sport} className="sport-bar">
                   <span className="mono" style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500 }}>{s.sport}</span>
                   <div className="sport-bar-track">
@@ -114,20 +135,20 @@ export default function Dashboard({ assets, detections, onOpenDetection, onNav }
 
           <div className="card fade-up delay-4">
             <div className="card-head"><h3>Top offending sources</h3></div>
-            {[
-              { d: 'streamhub.example', c: 38, w: 100 },
-              { d: 'fancdn.example', c: 24, w: 63 },
-              { d: 'reupload.example', c: 19, w: 50 },
-              { d: 'forum.kickoff.example', c: 12, w: 31 },
-              { d: 'imgur.example', c: 8, w: 21 },
-            ].map(s => (
-              <div key={s.d} style={{ padding: '11px 22px', borderBottom: '1px solid var(--line-2)' }}>
+            {sourceBreakdown.length === 0 ? (
+              <div style={{ padding: '18px 22px' }}>
+                <div className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>
+                  No real source domains captured yet. Once detections arrive, this list will reflect actual hosts.
+                </div>
+              </div>
+            ) : sourceBreakdown.map(s => (
+              <div key={s.domain} style={{ padding: '11px 22px', borderBottom: '1px solid var(--line-2)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="mono" style={{ fontSize: 12 }}>{s.d}</span>
-                  <span className="mono" style={{ fontSize: 12, color: 'var(--coral)', fontWeight: 700 }}>{s.c}</span>
+                  <span className="mono" style={{ fontSize: 12 }}>{s.domain}</span>
+                  <span className="mono" style={{ fontSize: 12, color: 'var(--coral)', fontWeight: 700 }}>{s.count}</span>
                 </div>
                 <div className="conf-track" style={{ marginTop: 6 }}>
-                  <div className="conf-fill" style={{ width: `${s.w}%`, background: 'var(--coral)' }} />
+                  <div className="conf-fill" style={{ width: `${s.width}%`, background: 'var(--coral)' }} />
                 </div>
               </div>
             ))}

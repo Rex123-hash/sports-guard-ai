@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { SAMPLE_ASSETS } from './data/sample-data.js';
 import { SG_API } from './services/api.js';
 import { onAuthStateChanged, signOut } from './services/firebase-auth.js';
 
@@ -21,10 +20,10 @@ import './styles/global.css';
 function App({ user }) {
   const [page, setPage] = useState('landing');
   const [now, setNow] = useState(new Date());
-  const [assets, setAssets] = useState(SAMPLE_ASSETS);
+  const [assets, setAssets] = useState([]);
   const [detections, setDetections] = useState([]);
   const [drawerDet, setDrawerDet] = useState(null);
-  const [stats, setStats] = useState({ detections: 0 });
+  const [stats, setStats] = useState({ totalAssets: 0, totalDetections: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -33,17 +32,22 @@ function App({ user }) {
   }, []);
 
   useEffect(() => {
-    async function fetchDetections() {
+    async function fetchOperations() {
       try {
-        const data = await SG_API.detections();
-        setDetections(data.detections || []);
-        if (data.stats) setStats(data.stats);
+        const [assetsData, detectionsData] = await Promise.all([
+          SG_API.assets(),
+          SG_API.detections(),
+        ]);
+
+        setAssets(Array.isArray(assetsData.assets) ? assetsData.assets : []);
+        setDetections(detectionsData.detections || []);
+        if (detectionsData.stats) setStats(detectionsData.stats);
       } catch (err) {
-        console.error('Failed to fetch detections:', err);
+        console.error('Failed to fetch operations data:', err);
       }
     }
-    fetchDetections();
-    const poll = setInterval(fetchDetections, 10000);
+    fetchOperations();
+    const poll = setInterval(fetchOperations, 10000);
     return () => clearInterval(poll);
   }, []);
 
@@ -113,9 +117,18 @@ function App({ user }) {
       <main className="main">
         <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut} onMenuToggle={() => setSidebarOpen(v => !v)}/>
         {page === 'landing'    && <Landing onNav={setPage}/>}
-        {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} onOpenDetection={setDrawerDet} onNav={setPage}/>}
+        {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} stats={stats} onOpenDetection={setDrawerDet} onNav={setPage}/>}
         {page === 'guide'      && <Guide onNav={setPage}/>}
-        {page === 'register'   && <Register onNav={setPage} onRegistered={(a) => setAssets(prev => [{ id: `n-${Date.now()}`, ...a, registered: new Date().toISOString(), frame: 'F-NEW' }, ...prev])}/>}
+        {page === 'register'   && <Register onNav={setPage} onRegistered={(asset) => {
+          setAssets(prev => {
+            const exists = prev.some(existing => existing.id === asset.id);
+            setStats(current => ({
+              ...current,
+              totalAssets: exists ? (current.totalAssets || prev.length) : Math.max((current.totalAssets || 0) + 1, prev.length + 1),
+            }));
+            return [asset, ...prev.filter(existing => existing.id !== asset.id)];
+          });
+        }}/>}
         {page === 'check'      && <CheckURL assets={assets} onDetection={handleDetection}/>}
         {page === 'verify'     && <Verify/>}
         {page === 'archive'    && <Archive assets={assets} onNav={setPage}/>}

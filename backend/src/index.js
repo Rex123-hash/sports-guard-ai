@@ -7,6 +7,7 @@ const registerRoute = require('./routes/register');
 const checkRoute = require('./routes/check');
 const verifyRoute = require('./routes/verify');
 const detectionsRoute = require('./routes/detections');
+const assetsRoute = require('./routes/assets');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -37,6 +38,7 @@ app.post('/api/register', upload.single('image'), registerRoute);
 app.post('/api/check', checkRoute);
 app.post('/api/verify', upload.single('image'), verifyRoute);
 app.get('/api/detections', detectionsRoute);
+app.get('/api/assets', assetsRoute);
 
 app.use((err, req, res, next) => {
   console.error('[error]', err.message);

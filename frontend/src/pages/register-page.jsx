@@ -32,7 +32,7 @@ export default function Register({ onRegistered, onNav }) {
       const result = await SG_API.register(file, meta);
       setHash(result.phash || result.assetId);
       setStep('done');
-      onRegistered && onRegistered({ ...meta, phash: result.phash || result.assetId });
+      onRegistered && onRegistered(result.asset || { ...meta, phash: result.phash || result.assetId });
     } catch (err) {
       console.error(err);
       alert('Registration failed: ' + err.message);

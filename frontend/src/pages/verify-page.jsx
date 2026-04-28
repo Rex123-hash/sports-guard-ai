@@ -76,7 +76,7 @@ export default function Verify() {
     const report = [
       'SPORTSGUARD GEMINI VERIFICATION REPORT',
       `Generated: ${new Date().toLocaleString()}`,
-      `Model: Gemini 1.5 Flash on Vertex AI`,
+      `Model: Gemini 2.5 Flash on Vertex AI`,
       `Source File: ${file?.name || 'uploaded-frame'}`,
       `Authenticity Score: ${authenticity}%`,
       `Status: ${status}`,
@@ -163,7 +163,7 @@ export default function Verify() {
                     }}
                   >
                     {Icon.check}
-                    Analyzed by Gemini 1.5 Flash
+                    Analyzed by Gemini 2.5 Flash
                   </div>
                   <div className="serif" style={{ fontSize: 32, lineHeight: 1.08, marginTop: 14, fontWeight: 400 }}>
                     {geminiReport.authenticity}% authentic.
@@ -180,7 +180,7 @@ export default function Verify() {
                   <div style={{ marginTop: 12, display: 'grid', gap: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--ink-mute)' }}>Model</span>
-                      <strong>Gemini 1.5 Flash</strong>
+                      <strong>Gemini 2.5 Flash</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--ink-mute)' }}>Pipeline</span>
@@ -245,7 +245,7 @@ export default function Verify() {
 
       <div className="attribution">
         <span>SportsGuard | Verify</span>
-        <span>Cloud Vision | Gemini 1.5 Flash | Vertex AI provenance review</span>
+        <span>Cloud Vision | Gemini 2.5 Flash | Vertex AI provenance review</span>
       </div>
     </div>
   );

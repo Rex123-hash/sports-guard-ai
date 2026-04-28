@@ -51,6 +51,12 @@ export const SG_API = {
     return res.json();
   },
 
+  async assets() {
+    const res = await fetch(`${BASE}/api/assets`);
+    if (!res.ok) throw new Error('Failed to load assets');
+    return res.json();
+  },
+
   async health() {
     const res = await fetch(`${BASE}/health`);
     return res.json();
