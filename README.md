@@ -223,6 +223,37 @@ cd frontend && npm run build && firebase deploy --only hosting
 
 ---
 
+## Testing
+
+Both packages ship with executable test suites — no test framework dependency, just `node`.
+
+### Frontend
+```bash
+cd frontend && npm test
+```
+Verifies the Vite migration is intact: `index.html` uses `type="module"` (no leftover `text/babel`), the landing page exposes primary actions, and `src/main.jsx` / `services/api.js` / `components/shell.jsx` keep the migrated module structure.
+
+### Backend
+```bash
+cd backend && npm test
+```
+Five **SSRF guard** tests for the URL fetcher — the most security-critical surface, since `/check` downloads arbitrary user-supplied URLs:
+
+| Test | What it verifies |
+|---|---|
+| Rejects unsupported protocols | Blocks `file://`, `gopher://`, etc. |
+| Rejects localhost hostnames | Blocks `http://localhost:*` |
+| Rejects cloud metadata targets | Blocks `169.254.169.254` (GCP / AWS metadata) |
+| Accepts public IPs | Allows legitimate public targets |
+| Classifies private address ranges | Catches `10.x`, `192.168.x`, `::1`, `127.x` |
+
+### Build verification
+```bash
+cd frontend && npm run build       # Vite production build
+```
+
+---
+
 ## API Reference
 
 | Method | Endpoint | Purpose |
