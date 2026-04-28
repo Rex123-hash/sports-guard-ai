@@ -73,13 +73,13 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
 ### Sign-in — Google OAuth + Anonymous Guest Mode
 
 <p align="center">
-  <img src="docs/images/login.png" alt="SportsGuard sign-in screen with Google sign-in and guest mode" width="100%" />
+  <img src="docs/images/login.png?v=2" alt="SportsGuard sign-in screen with Google sign-in and guest mode" width="100%" />
 </p>
 
 ### Dashboard — Operator Workspace
 
 <p align="center">
-  <img src="docs/images/dashboard.png" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
+  <img src="docs/images/dashboard.png?v=2" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
 </p>
 
 ---
