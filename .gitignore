@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.npm
+
+# Environment / secrets
+.env
+*.env.local
+backend/src/service-account*.json
+backend/sa-key.json
+backend/*.json.key
+
+# Build artifacts
+.cache/
+dist/
+build/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code (dev tool — never deploy)
+.claude/
+frontend/.claude/
+
+# Local-only working folders
+Thumbnail pics/
+frontend/backup-pre-vite-module-migration/
+backend/test/
+frontend/test/

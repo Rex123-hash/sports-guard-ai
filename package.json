@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "test": "npm --prefix backend test && npm --prefix frontend test"
+  },
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
+  }
+}
