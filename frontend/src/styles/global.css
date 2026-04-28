@@ -319,27 +319,151 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ===== MOBILE NAV CONTROLS ===== */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--ink);
+  border-radius: 8px;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.hamburger:hover { background: var(--cream-2); }
+
+.sidebar-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--ink-mute);
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.sidebar-close:hover { color: var(--ink); background: var(--cream-2); }
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(11, 18, 32, 0.48);
+  backdrop-filter: blur(2px);
+  z-index: 199;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablet (≤ 1024px) */
 @media (max-width: 1024px) {
-  .app {
-    display: block;
-  }
-
-  .sidebar {
-    position: static;
-    width: 100%;
-    height: auto;
-  }
-
-  .main {
-    margin-left: 0;
-    min-height: auto;
-  }
+  .hero-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .page { padding: 28px 28px 48px; }
+  .search { width: 220px; }
 
   .evidence-doc__hero,
   .evidence-doc__summary,
   .evidence-doc__grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  /* --- Sidebar becomes a slide-in overlay --- */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    width: 264px;
+    transform: translateX(-100%);
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.1, 1);
+    z-index: 200;
+    box-shadow: 30px 0 80px -20px rgba(11,18,32,0.25);
+  }
+  .sidebar--open { transform: translateX(0); }
+  .sidebar-overlay { display: block; }
+  .sidebar-close { display: flex; }
+  .hamburger { display: flex; }
+
+  /* --- Main no longer pushed by sidebar --- */
+  .main { margin-left: 0; }
+
+  /* --- Topbar --- */
+  .topbar { padding: 12px 16px; gap: 8px; }
+  .topbar-search { display: none !important; }
+  .topbar-newcheck { display: none !important; }
+
+  /* --- Page layout --- */
+  .page { padding: 20px 16px 52px; }
+  .page-title { font-size: 28px; letter-spacing: -0.015em; }
+  .page-head { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .page-head-meta { display: none; }
+  .page-sub { font-size: 14px; }
+
+  /* --- Stats grid stays 2-col on mobile --- */
+  .hero-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat { padding: 16px 14px; }
+  .stat-value { font-size: 34px; }
+  .stat-foot { flex-direction: column; align-items: flex-start; gap: 4px; }
+
+  /* --- Force all inline-style and class grids to single column --- */
+  .grid[style] { grid-template-columns: 1fr !important; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
+
+  /* --- Verdict card --- */
+  .verdict {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 16px;
+    padding: 22px 18px;
+  }
+  .verdict-headline { font-size: 22px; }
+
+  /* --- Pipeline: drop the timing meta column --- */
+  .pipe-step { grid-template-columns: 32px 1fr auto; }
+  .pipe-meta { display: none; }
+
+  /* --- Detection table: 3 essential cols only --- */
+  .det-row { grid-template-columns: 50px 1fr 88px; gap: 10px; padding: 12px 14px; }
+  .det-row > *:nth-child(n+4) { display: none; }
+  .det-row.head { display: none; }
+
+  /* --- Cards --- */
+  .card-pad-lg { padding: 18px; }
+  .card-pad { padding: 14px; }
+
+  /* --- Hash / code blocks --- */
+  .hash-block { font-size: 10px; }
+  .hash-label { font-size: 8px; }
+
+  /* --- Search bar hidden (nav handles this) --- */
+  .search { display: none; }
+
+  /* --- Drawer full-width on mobile --- */
+  .drawer { width: 100vw; max-width: 100vw; }
+}
+
+/* Small mobile (≤ 480px) */
+@media (max-width: 480px) {
+  .hero-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-value { font-size: 28px; }
+  .stat { padding: 12px; }
+  .page-title { font-size: 22px; }
+  .topbar { padding: 10px 12px; }
+  .verdict-headline { font-size: 18px; }
+  .verdict { padding: 16px 14px; }
+  .card-pad-lg { padding: 14px; }
+  .page { padding: 16px 12px 48px; }
+  .btn.lg { padding: 11px 14px; font-size: 13px; }
 }
 .page-head {
   display: flex; align-items: flex-end; justify-content: space-between;

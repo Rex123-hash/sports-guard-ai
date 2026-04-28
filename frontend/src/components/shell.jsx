@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Counter, Sparkline, Icon } from './primitives.jsx';
 
-export function Sidebar({ page, onNav, totals }) {
+export function Sidebar({ page, onNav, totals, open, onClose }) {
   const items = [
     { id: 'landing',   label: 'Home',          sc: 'H', icon: Icon.home },
     { id: 'dashboard', label: 'Metrics',       sc: 'D', icon: Icon.grid },
@@ -14,58 +14,72 @@ export function Sidebar({ page, onNav, totals }) {
     { id: 'archive',    label: 'All Assets', icon: Icon.grid },
     { id: 'detections', label: 'History',    icon: Icon.shield },
   ];
+
+  function handleNav(id) {
+    onNav(id);
+    onClose && onClose();
+  }
+
   return (
-    <aside className="sidebar">
-      <div className="brand">
-        <div style={{
-          width: 38, height: 38, borderRadius: 10, overflow: 'hidden',
-          display: 'grid', placeItems: 'center', flexShrink: 0,
-        }}>
-          <img src="/logo.png" alt="SportsGuard Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+    <>
+      {open && <div className="sidebar-overlay" onClick={onClose}/>}
+      <aside className={`sidebar${open ? ' sidebar--open' : ''}`}>
+        <div className="brand">
+          <div style={{
+            width: 38, height: 38, borderRadius: 10, overflow: 'hidden',
+            display: 'grid', placeItems: 'center', flexShrink: 0,
+          }}>
+            <img src="/logo.png" alt="SportsGuard Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
+          <div>
+            <div className="brand-name">SportsGuard</div>
+          </div>
+          <button className="sidebar-close" onClick={onClose} aria-label="Close menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
-        <div>
-          <div className="brand-name">SportsGuard</div>
+        <div className="nav">
+          <div className="nav-section">Workspace</div>
+          {items.map(it => (
+            <div key={it.id} className={`nav-item ${page === it.id ? 'active' : ''}`} onClick={() => handleNav(it.id)}>
+              <span className="nav-icon">{it.icon}</span>
+              <span>{it.label}</span>
+              <span className="nav-shortcut">{it.sc}</span>
+            </div>
+          ))}
+          <div className="nav-section">Archive</div>
+          {archive.map(it => (
+            <div key={it.id} className={`nav-item ${page === it.id ? 'active' : ''}`} onClick={() => handleNav(it.id)}>
+              <span className="nav-icon">{it.icon}</span>
+              <span>{it.label}</span>
+            </div>
+          ))}
         </div>
-      </div>
-      <div className="nav">
-        <div className="nav-section">Workspace</div>
-        {items.map(it => (
-          <div key={it.id} className={`nav-item ${page === it.id ? 'active' : ''}`} onClick={() => onNav(it.id)}>
-            <span className="nav-icon">{it.icon}</span>
-            <span>{it.label}</span>
-            <span className="nav-shortcut">{it.sc}</span>
-          </div>
-        ))}
-        <div className="nav-section">Archive</div>
-        {archive.map(it => (
-          <div key={it.id} className={`nav-item ${page === it.id ? 'active' : ''}`} onClick={() => onNav(it.id)}>
-            <span className="nav-icon">{it.icon}</span>
-            <span>{it.label}</span>
-          </div>
-        ))}
-      </div>
-      <div style={{ padding: '0 14px' }}>
-        <div className="sidebar-card">
-          <div className="small">Today · live</div>
-          <div className="big"><Counter to={totals.detections} duration={1400}/></div>
-          <div style={{ fontSize: 11, opacity: 0.85, marginTop: 4 }}>detections processed</div>
-          <div style={{ display: 'flex', gap: 6, marginTop: 12, fontSize: 10, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.06em', color: 'var(--butter)', opacity: 0.85 }}>
-            <span>↑ 12% vs avg</span>
-          </div>
-          <div style={{ marginTop: 16, marginLeft: -16, marginRight: -16, marginBottom: -16 }}>
-            <Sparkline w={200} h={40} color="var(--moss)" values={[3,5,4,7,6,9,8,11,10,14,13,18]} />
+        <div style={{ padding: '0 14px' }}>
+          <div className="sidebar-card">
+            <div className="small">Today · live</div>
+            <div className="big"><Counter to={totals.detections} duration={1400}/></div>
+            <div style={{ fontSize: 11, opacity: 0.85, marginTop: 4 }}>detections processed</div>
+            <div style={{ display: 'flex', gap: 6, marginTop: 12, fontSize: 10, fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.06em', color: 'var(--butter)', opacity: 0.85 }}>
+              <span>↑ 12% vs avg</span>
+            </div>
+            <div style={{ marginTop: 16, marginLeft: -16, marginRight: -16, marginBottom: -16 }}>
+              <Sparkline w={200} h={40} color="var(--moss)" values={[3,5,4,7,6,9,8,11,10,14,13,18]} />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="sidebar-foot">
-        <span className="live-indicator"><span className="pulse-dot"/>STREAM LIVE</span>
-        <span>EU-W-1</span>
-      </div>
-    </aside>
+        <div className="sidebar-foot">
+          <span className="live-indicator"><span className="pulse-dot"/>STREAM LIVE</span>
+          <span>EU-W-1</span>
+        </div>
+      </aside>
+    </>
   );
 }
 
-export function Topbar({ now, page, onNav, user, onSignOut }) {
+export function Topbar({ now, page, onNav, user, onSignOut, onMenuToggle }) {
   const titles = {
     landing:    ['Workspace', 'Home'],
     dashboard:  ['Workspace', 'Metrics'],
@@ -90,16 +104,25 @@ export function Topbar({ now, page, onNav, user, onSignOut }) {
 
   return (
     <div className="topbar">
-      <div className="crumbs">
-        {sec} <span style={{ margin: '0 8px', opacity: 0.4 }}>/</span> <strong>{name}</strong>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button className="hamburger" onClick={onMenuToggle} aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div className="crumbs">
+          {sec} <span style={{ margin: '0 8px', opacity: 0.4 }}>/</span> <strong>{name}</strong>
+        </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div className="search">
+        <div className="search topbar-search">
           {Icon.search}
           <input placeholder="Search assets, hashes, detections…"/>
           <span className="kbd">⌘K</span>
         </div>
-        <button className="btn primary" onClick={() => onNav('check')}>
+        <button className="btn primary topbar-newcheck" onClick={() => onNav('check')}>
           {Icon.bolt}New check
         </button>
 

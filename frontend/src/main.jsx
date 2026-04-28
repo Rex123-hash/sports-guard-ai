@@ -25,6 +25,7 @@ function App({ user }) {
   const [detections, setDetections] = useState([]);
   const [drawerDet, setDrawerDet] = useState(null);
   const [stats, setStats] = useState({ detections: 0 });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -51,7 +52,7 @@ function App({ user }) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       const map = { h: 'landing', d: 'dashboard', r: 'register', c: 'check', v: 'verify', g: 'guide' };
       const k = e.key.toLowerCase();
-      if (map[k]) setPage(map[k]);
+      if (map[k]) { setPage(map[k]); setSidebarOpen(false); }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -79,9 +80,9 @@ function App({ user }) {
 
   return (
     <div className="app">
-      <Sidebar page={page} onNav={setPage} totals={stats}/>
+      <Sidebar page={page} onNav={setPage} totals={stats} open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
       <main className="main">
-        <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut}/>
+        <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut} onMenuToggle={() => setSidebarOpen(v => !v)}/>
         {page === 'landing'    && <Landing onNav={setPage}/>}
         {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} onOpenDetection={setDrawerDet} onNav={setPage}/>}
         {page === 'guide'      && <Guide onNav={setPage}/>}
