@@ -1,159 +1,279 @@
 <div align="center">
-  <img src="frontend/public/logo.png" alt="SportsGuard AI Logo" width="92" />
+  <img src="frontend/public/logo.png" alt="SportsGuard AI" width="96" />
+
   <h1>SportsGuard AI</h1>
-  <p><strong>Digital asset protection for live sports media</strong></p>
-  <p><strong>Enterprise-grade media integrity workflow for sports rights holders</strong></p>
 
-  <a href="https://sports-guard-ai.web.app">
-    <img src="https://img.shields.io/badge/Live%20Demo-sports--guard--ai.web.app-16A34A?style=for-the-badge&logo=firebase&logoColor=white" alt="Live Demo" />
-  </a>
-  <a href="https://sportsguard-api-712383807173.us-central1.run.app/health">
-    <img src="https://img.shields.io/badge/Cloud%20Run%20API-Live-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Cloud Run API" />
-  </a>
-  <img src="https://img.shields.io/badge/Google%20Cloud-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Google Cloud" />
-  <img src="https://img.shields.io/badge/Gemini%201.5%20Flash-8E75B2?style=for-the-badge&logo=googlebard&logoColor=white" alt="Gemini 1.5 Flash" />
-  <img src="https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black" alt="Firebase" />
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Firestore-FF6F00?style=for-the-badge&logo=firebase&logoColor=white" alt="Firestore" />
-  <img src="https://img.shields.io/badge/Cloud%20Vision-34A853?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Cloud Vision" />
-  <img src="https://img.shields.io/badge/Vertex%20AI-1A73E8?style=for-the-badge&logo=googlecloud&logoColor=white" alt="Vertex AI" />
-  <img src="https://img.shields.io/badge/Google%20Auth-Enabled-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google Auth" />
-  <img src="https://img.shields.io/badge/Guest%20Mode-Available-475569?style=for-the-badge&logo=ghost&logoColor=white" alt="Guest Mode" />
+  <p><strong>AI-powered media integrity for live sports broadcasters and rights holders.</strong></p>
+  <p><em>Built on Google Cloud · Gemini · Cloud Vision · Cloud Run · Firestore</em></p>
+
+  <p>
+    <a href="https://sports-guard-ai.web.app">
+      <img src="https://img.shields.io/badge/Live%20Demo-sports--guard--ai.web.app-16A34A?style=for-the-badge&logo=firebase&logoColor=white" alt="Live Demo" />
+    </a>
+    <a href="https://sportsguard-api-712383807173.us-central1.run.app/health">
+      <img src="https://img.shields.io/badge/API-Cloud%20Run-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="API" />
+    </a>
+    <img src="https://img.shields.io/badge/Track-Digital%20Asset%20Protection-111827?style=for-the-badge" alt="Track 1" />
+  </p>
+
+  <p>
+    <img src="https://img.shields.io/badge/Gemini%201.5%20Flash-8E75B2?style=flat-square&logo=googlebard&logoColor=white" />
+    <img src="https://img.shields.io/badge/Vertex%20AI-1A73E8?style=flat-square&logo=googlecloud&logoColor=white" />
+    <img src="https://img.shields.io/badge/Cloud%20Vision-34A853?style=flat-square&logo=googlecloud&logoColor=white" />
+    <img src="https://img.shields.io/badge/Cloud%20Run-0F9D58?style=flat-square&logo=googlecloud&logoColor=white" />
+    <img src="https://img.shields.io/badge/Firestore-FF6F00?style=flat-square&logo=firebase&logoColor=white" />
+    <img src="https://img.shields.io/badge/Cloud%20Storage-4285F4?style=flat-square&logo=googlecloud&logoColor=white" />
+    <img src="https://img.shields.io/badge/Firebase%20Auth-FFCA28?style=flat-square&logo=firebase&logoColor=black" />
+    <img src="https://img.shields.io/badge/React%2018-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
+    <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" />
+  </p>
 </div>
-
-<br />
-
-## Live Deployment
-
-- Frontend: [https://sports-guard-ai.web.app](https://sports-guard-ai.web.app)
-- Backend API health: [https://sportsguard-api-712383807173.us-central1.run.app/health](https://sportsguard-api-712383807173.us-central1.run.app/health)
-
-## What SportsGuard AI Does
-
-SportsGuard AI helps broadcasters, leagues, and rights holders protect official sports media from unauthorized reuse. It lets operators register official frames, scan suspicious media URLs, verify image provenance, and generate evidence reports for enforcement.
-
-Core product capabilities:
-
-- Official frame registration with visual fingerprinting
-- Suspicious URL scanning against protected assets
-- Gemini-assisted similarity and authenticity review
-- Downloadable evidence reports and DMCA draft generation
-- Google sign-in plus guest access for quick demos
-
-## Product Images
-
-### Landing Experience
-
-<p align="center">
-  <img src="frontend/public/landing-reference-bg.jpeg" alt="SportsGuard landing visual" width="100%" />
-</p>
-
-### Login Experience
-
-<p align="center">
-  <img src="frontend/public/login-reference.jpeg" alt="SportsGuard login visual" width="100%" />
-</p>
-
-## Problem
-
-Live sports piracy spreads fast during the most valuable broadcast window. Rights holders often lose time collecting proof, comparing suspect uploads with official footage, and preparing takedown requests manually.
-
-SportsGuard AI shortens that loop by combining fingerprint-based matching with Google Cloud AI services to help operators identify suspicious content quickly and turn findings into usable enforcement evidence.
-
-## Google Cloud Stack
-
-| Service | Role in SportsGuard |
-|---|---|
-| Gemini 1.5 Flash on Vertex AI | Similarity and authenticity reasoning |
-| Cloud Run | Hosts the backend APIs |
-| Cloud Vision API | OCR and ownership-signal extraction |
-| Cloud Firestore | Detection history and metadata storage |
-| Cloud Storage | Asset and evidence storage |
-| Firebase Hosting | Frontend deployment |
-| Firebase Auth | Google sign-in and session handling |
-
-## Product Flow
-
-1. A rights holder signs in or enters guest mode.
-2. Official sports frames are uploaded and fingerprinted.
-3. A suspicious image URL is submitted for checking.
-4. The backend computes similarity and collects visual evidence.
-5. Gemini and Vision APIs help classify the content.
-6. The result is logged and turned into a report or DMCA draft.
-
-## Feature Breakdown
-
-### 1. Asset Registration
-
-- Upload official broadcast frames
-- Store rights-holder metadata
-- Create resilient perceptual fingerprints
-
-### 2. URL Detection
-
-- Submit suspicious image URLs
-- Compare against registered media
-- Return confidence, verdict, and supporting reasoning
-
-### 3. Verification
-
-- Upload a frame for authenticity review
-- Show an AI-backed confidence score
-- Export a verification report
-
-### 4. Evidence and Enforcement
-
-- Generate evidence reports
-- Export verification certificates
-- Produce DMCA-ready drafts
-
-## Tech Stack
-
-| Layer | Technology |
-|---|---|
-| Frontend | React + Vite |
-| Backend | Node.js + Express |
-| Hosting | Firebase Hosting |
-| API Runtime | Google Cloud Run |
-| AI | Gemini 1.5 Flash on Vertex AI |
-| OCR / provenance | Google Cloud Vision API |
-| Database | Cloud Firestore |
-| Auth | Firebase Auth |
-
-## Local Setup
-
-### Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Backend
-
-```bash
-cd backend
-npm install
-npm start
-```
-
-By default, frontend development talks to `http://localhost:8080` in Vite dev mode unless `VITE_API_BASE` is provided.
-
-## Validation
-
-- `frontend npm test`
-- `frontend npm run build`
-
-## Solution Challenge Fit
-
-SportsGuard AI aligns with the Solution Challenge theme by combining:
-
-- real Google Cloud deployment
-- visible Gemini integration
-- operator-facing evidence workflows
-- practical sports media protection use cases
 
 ---
 
-Built by **Team Hackwin** for Solution Challenge 2026.
+## The Problem
+
+Live sports piracy is a multi-billion-dollar leak. The most valuable broadcast window is also when pirated clips spread fastest — across mirror sites, social platforms, and reupload forums.
+
+For rights holders the bottleneck is not detection. It is **proof**:
+
+- Manually downloading a suspect clip
+- Comparing it frame-by-frame against an original
+- Filling out a takedown form before the highlight goes cold
+
+By the time a notice is filed, the pirated copy has already done its damage.
+
+## The Solution
+
+**SportsGuard AI is a Google Cloud–native workflow that takes a suspect URL and returns a verdict, an evidence report, and a DMCA draft — in seconds.**
+
+1. Rights holder registers an official broadcast frame → SportsGuard computes a 64-bit perceptual hash and stores it.
+2. Operator submits a suspicious image URL → backend fetches it, recomputes the hash, runs Hamming-distance search.
+3. Top candidates pass to **Gemini 1.5 Flash** on Vertex AI for visual similarity reasoning.
+4. **Cloud Vision** extracts watermarks, broadcaster overlays, and copyright marks from both images.
+5. A weighted score (`0.4 × pHash + 0.6 × Gemini`) classifies the result: **piracy ≥ 85% · review 70–84% · clean < 70%**.
+6. One click exports the evidence report or generates a populated DMCA notice.
+
+---
+
+## Live Demo
+
+| | URL |
+|---|---|
+| **Frontend** | https://sports-guard-ai.web.app |
+| **Backend API** | https://sportsguard-api-712383807173.us-central1.run.app |
+| **Health Check** | [/health](https://sportsguard-api-712383807173.us-central1.run.app/health) |
+
+Sign in with Google or pick **Continue as Guest** to skip auth and try the full pipeline.
+
+---
+
+## Product Tour
+
+### Sign-in — Google OAuth + Anonymous Guest Mode
+
+<p align="center">
+  <img src="docs/images/login.png" alt="SportsGuard sign-in screen with Google sign-in and guest mode" width="100%" />
+</p>
+
+### Dashboard — Operator Workspace
+
+<p align="center">
+  <img src="docs/images/dashboard.png" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
+</p>
+
+---
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                      Operator (Browser)                          │
+│   React 18 + Vite ES Modules · Firebase Hosting (CDN)            │
+│   Pages: Register · Check · Verify · Archive · Detection Log     │
+└──────────────────────┬───────────────────────────────────────────┘
+                       │ HTTPS · JSON
+                       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                    Firebase Auth (OAuth + Anonymous)             │
+│   Google Sign-In  ·  Guest mode  ·  ID-token verification        │
+└──────────────────────┬───────────────────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│                  Backend API · Cloud Run (Node.js)               │
+│   Express routes:  /register   /check   /verify   /detections    │
+└──┬─────────────┬─────────────┬──────────────┬───────────────┬────┘
+   │             │             │              │               │
+   ▼             ▼             ▼              ▼               ▼
+┌──────┐  ┌────────────┐  ┌──────────┐  ┌────────────┐  ┌──────────┐
+│ pHash│  │Cloud Vision│  │  Gemini  │  │  Firestore │  │   Cloud  │
+│  64  │  │  OCR · Logo│  │   1.5    │  │  detections│  │  Storage │
+│ DCT  │  │ Watermarks │  │  Flash   │  │   assets   │  │  frames  │
+└──────┘  └────────────┘  └──────────┘  └────────────┘  └──────────┘
+                          (Vertex AI)
+```
+
+**Detection pipeline inside `/check`:**
+
+```
+URL  →  Safety check  →  Download  →  pHash 64  →  Hamming search
+                                                      │
+                                                      ▼
+                              ┌── Cloud Vision OCR ───┤
+                              │                       │
+                              └── Gemini 1.5 Flash ───┤
+                                                      ▼
+                              Score = 0.4·pHash + 0.6·Gemini
+                                                      │
+                       ┌──────────────────────────────┤
+                       ▼                              ▼
+                  Firestore log              Evidence + DMCA draft
+```
+
+---
+
+## Google Cloud Stack
+
+| Service | Role in SportsGuard AI |
+|---|---|
+| **Gemini 1.5 Flash** *(Vertex AI)* | Multimodal similarity reasoning · evidence narration |
+| **Cloud Vision API** | OCR · watermark detection · logo & ownership signals |
+| **Cloud Run** | Stateless Node.js API · auto-scales per request |
+| **Cloud Firestore** | Asset registry · detection history · audit trail |
+| **Cloud Storage** | Original broadcast frames · evidence artefacts |
+| **Firebase Hosting** | React frontend · global CDN delivery |
+| **Firebase Auth** | Google OAuth + anonymous guest sessions |
+
+---
+
+## Features
+
+### Asset Registration
+Upload an official broadcast frame and a 64-bit perceptual hash is computed using DCT-based pHash. The fingerprint survives JPEG recompression, cropping, brightness/contrast shifts, and minor watermark overlays.
+
+### URL Piracy Detection
+Paste any public image URL. Backend safety-checks the URL, fetches the image, computes its hash, runs Hamming-distance search across the registry, then sends the top candidate to Gemini 1.5 Flash for multimodal adjudication.
+
+### Frame Verification
+Upload a frame to read its watermark and provenance signals. Cloud Vision OCR surfaces broadcaster overlays, timecodes, and copyright marks. The result either confirms a licensed broadcast feed or flags the source as unverified.
+
+### Evidence Export & DMCA Drafts
+Every detection produces a structured evidence report and, for confirmed piracy, a pre-populated DMCA takedown notice referencing the matched asset, similarity scores, and Gemini reasoning.
+
+### Detection Log
+Permanent record of every adjudicated URL — searchable, sortable, and exportable. Live polling keeps the dashboard in sync with new detections.
+
+---
+
+## Tech Stack
+
+| Layer | Choice |
+|---|---|
+| **Frontend** | React 18 · Vite ES modules · Firebase Hosting |
+| **Backend** | Node.js 20 · Express · Docker · Cloud Run |
+| **AI / Vision** | Gemini 1.5 Flash on Vertex AI · Cloud Vision API |
+| **Hashing** | 64-bit perceptual hash (DCT-based pHash) |
+| **Persistence** | Cloud Firestore (NoSQL) · Cloud Storage |
+| **Auth** | Firebase Auth — Google OAuth + Anonymous |
+| **CI / Build** | Vite · npm · `gcloud run deploy` |
+
+---
+
+## Local Setup
+
+### Prerequisites
+- Node.js 20+
+- A Google Cloud project with **Vertex AI**, **Cloud Vision**, **Firestore**, **Cloud Storage**, and **Firebase Auth** enabled
+- A Firebase web app config
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Configure `frontend/.env`:
+```
+VITE_API_BASE=http://localhost:8080
+VITE_FIREBASE_API_KEY=...
+VITE_FIREBASE_AUTH_DOMAIN=...
+VITE_FIREBASE_PROJECT_ID=...
+VITE_FIREBASE_APP_ID=...
+```
+
+### Backend
+```bash
+cd backend
+cp .env.example .env       # fill in GCP project + service-account creds
+npm install
+npm start                  # http://localhost:8080
+```
+
+### Deploy
+```bash
+# Backend → Cloud Run
+gcloud run deploy sportsguard-api --source backend --region us-central1
+
+# Frontend → Firebase Hosting
+cd frontend && npm run build && firebase deploy --only hosting
+```
+
+---
+
+## API Reference
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `POST` | `/register` | Register a broadcast frame · returns `phash`, `assetId` |
+| `POST` | `/check`   | Scan a suspicious URL · returns verdict, scores, reasoning |
+| `POST` | `/verify`  | OCR + watermark check on uploaded image |
+| `GET`  | `/detections` | Paginated detection history |
+| `GET`  | `/health` | Service health check |
+
+---
+
+## Project Structure
+
+```
+sports-guard-ai/
+├── backend/
+│   ├── src/
+│   │   ├── index.js                    # Express bootstrap
+│   │   ├── routes/                     # /register /check /verify /detections
+│   │   └── modules/
+│   │       ├── phash.js                # 64-bit DCT perceptual hash
+│   │       ├── gemini.js               # Vertex AI · Gemini 1.5 Flash
+│   │       ├── vision.js               # Cloud Vision OCR + logo
+│   │       ├── firestore.js            # Asset & detection storage
+│   │       ├── storage.js              # Cloud Storage uploads
+│   │       └── urlSafety.js            # SSRF + content-type guard
+│   └── Dockerfile                      # Cloud Run container
+└── frontend/
+    ├── src/
+    │   ├── main.jsx                    # Root + auth gate
+    │   ├── components/                 # Sidebar, Topbar, LoginPage
+    │   ├── pages/                      # Landing, Dashboard, Register, Check, Verify, Archive
+    │   └── services/                   # api.js, firebase-auth.js
+    └── vite.config.js
+```
+
+---
+
+## Solution Challenge 2026 Fit
+
+| Criterion | How SportsGuard AI delivers |
+|---|---|
+| **Real Google Cloud usage** | Five GCP services in production · live URLs above |
+| **Generative AI integration** | Gemini 1.5 Flash on Vertex AI as the verdict authority |
+| **Track 1 — Digital Asset Protection** | End-to-end registration → detection → enforcement |
+| **Working prototype** | Deployed, browsable, demo-ready right now |
+| **Practical impact** | Compresses hours of manual proof collection into seconds |
+
+---
+
+<div align="center">
+  <p><strong>Built by Team Hackwin for Solution Challenge 2026.</strong></p>
+</div>
