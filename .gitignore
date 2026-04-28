@@ -30,5 +30,3 @@ frontend/.claude/
 # Local-only working folders
 Thumbnail pics/
 frontend/backup-pre-vite-module-migration/
-backend/test/
-frontend/test/
