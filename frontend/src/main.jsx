@@ -25,6 +25,7 @@ function App({ user }) {
   const [drawerDet, setDrawerDet] = useState(null);
   const [stats, setStats] = useState({ totalAssets: 0, totalDetections: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -53,6 +54,12 @@ function App({ user }) {
 
   useEffect(() => {
     function onKey(e) {
+      // Cmd/Ctrl+K focuses the global search from anywhere.
+      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyK') {
+        e.preventDefault();
+        document.getElementById('global-search')?.focus();
+        return;
+      }
       const tag = e.target?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -111,13 +118,19 @@ function App({ user }) {
     signOut().catch(err => console.error('Sign-out failed:', err));
   }
 
+  function handleSearch(value) {
+    setSearch(value);
+    // Typing from a non-list page jumps to History so results are visible.
+    if (value && (page === 'landing' || page === 'guide')) setPage('detections');
+  }
+
   return (
     <div className="app">
       <Sidebar page={page} onNav={setPage} totals={stats} open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
       <main className="main">
-        <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut} onMenuToggle={() => setSidebarOpen(v => !v)}/>
+        <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut} onMenuToggle={() => setSidebarOpen(v => !v)} search={search} onSearch={handleSearch}/>
         {page === 'landing'    && <Landing onNav={setPage}/>}
-        {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} stats={stats} onOpenDetection={setDrawerDet} onNav={setPage}/>}
+        {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} stats={stats} search={search} onOpenDetection={setDrawerDet} onNav={setPage}/>}
         {page === 'guide'      && <Guide onNav={setPage}/>}
         {page === 'register'   && <Register onNav={setPage} assetCount={Math.max(assets.length, stats?.totalAssets || 0)} onRegistered={(asset) => {
           setAssets(prev => {
@@ -131,8 +144,8 @@ function App({ user }) {
         }}/>}
         {page === 'check'      && <CheckURL assets={assets} onDetection={handleDetection}/>}
         {page === 'verify'     && <Verify/>}
-        {page === 'archive'    && <Archive assets={assets} onNav={setPage}/>}
-        {page === 'detections' && <DetectionLog detections={detections} assets={assets} onOpen={setDrawerDet}/>}
+        {page === 'archive'    && <Archive assets={assets} search={search} onNav={setPage}/>}
+        {page === 'detections' && <DetectionLog detections={detections} assets={assets} search={search} onOpen={setDrawerDet}/>}
         <Drawer detection={drawerDet} assets={assets} onClose={() => setDrawerDet(null)}/>
       </main>
     </div>

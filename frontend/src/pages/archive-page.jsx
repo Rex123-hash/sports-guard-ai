@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Icon, Placeholder, ConfBar, EvidenceReportDocument, buildEvidenceReport, buildEvidenceReportHtml, buildDmcaNotice, buildVerificationCertificate, copyTextToClipboard, downloadHtmlFile, downloadTextFile } from '../components/primitives.jsx';
+import { Icon, Placeholder, ConfBar, EvidenceReportDocument, buildEvidenceReport, buildEvidenceReportHtml, buildDmcaNotice, buildVerificationCertificate, copyTextToClipboard, downloadHtmlFile, downloadTextFile, matchesQuery } from '../components/primitives.jsx';
 
-export function Archive({ assets, onNav }) {
+export function Archive({ assets, search = '', onNav }) {
   const [selectedAsset, setSelectedAsset] = useState(null);
+  const shown = assets.filter(a => matchesQuery(a, search));
 
   function certificateText(asset) { return buildVerificationCertificate(asset); }
   function downloadCertificate(asset) { downloadTextFile(`sportsguard-certificate-${asset.id || 'asset'}.txt`, certificateText(asset)); }
@@ -22,7 +23,7 @@ export function Archive({ assets, onNav }) {
         <div className="det-row head" style={{ gridTemplateColumns: '60px 1.15fr 0.7fr 1fr 1fr 0.8fr 1.15fr' }}>
           <span></span><span>Title</span><span>Sport</span><span>Owner</span><span>pHash</span><span>License</span><span>Status</span>
         </div>
-        {assets.map((a, i) => (
+        {shown.map((a, i) => (
           <div key={a.id} className="det-row" style={{ gridTemplateColumns: '60px 1.15fr 0.7fr 1fr 1fr 0.8fr 1.15fr' }}>
             <div className="det-thumb"><Placeholder tone={['pine', 'coral', 'cream', 'dots', 'pine'][i % 5]} label={a.sport.toUpperCase().slice(0, 3)} frame={a.frame}/></div>
             <div>
@@ -45,6 +46,11 @@ export function Archive({ assets, onNav }) {
             </div>
           </div>
         ))}
+        {shown.length === 0 && (
+          <div className="mono" style={{ padding: '20px 22px', fontSize: 12, color: 'var(--ink-mute)' }}>
+            {search ? `No assets match "${search}".` : 'No assets registered yet.'}
+          </div>
+        )}
       </div>
 
       {selectedAsset && (
@@ -67,13 +73,14 @@ export function Archive({ assets, onNav }) {
 
       <div className="attribution">
         <span>SportsGuard · Registry</span>
-        <span>{assets.length} shown · sorted by recency</span>
+        <span>{shown.length} shown · sorted by recency</span>
       </div>
     </div>
   );
 }
 
-export function DetectionLog({ detections, assets, onOpen }) {
+export function DetectionLog({ detections, assets, search = '', onOpen }) {
+  const shown = detections.filter(d => matchesQuery(d, search));
   return (
     <div className="page">
       <div className="page-head">
@@ -87,7 +94,7 @@ export function DetectionLog({ detections, assets, onOpen }) {
         <div className="det-row head">
           <span>Time</span><span></span><span>Source · transformation</span><span>pHash</span><span>Confidence</span><span>Verdict</span><span></span>
         </div>
-        {detections.map(d => {
+        {shown.map(d => {
           const asset = assets.find(a => a.id === d.assetId);
           const tone = d.type === 'piracy' ? 'coral' : d.type === 'review' ? 'cream' : 'pine';
           return (
@@ -105,6 +112,11 @@ export function DetectionLog({ detections, assets, onOpen }) {
             </div>
           );
         })}
+        {shown.length === 0 && (
+          <div className="mono" style={{ padding: '20px 22px', fontSize: 12, color: 'var(--ink-mute)' }}>
+            {search ? `No detections match "${search}".` : 'No detections logged yet.'}
+          </div>
+        )}
       </div>
     </div>
   );

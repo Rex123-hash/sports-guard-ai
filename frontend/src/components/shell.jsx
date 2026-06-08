@@ -103,7 +103,7 @@ export function Sidebar({ page, onNav, totals, open, onClose }) {
   );
 }
 
-export function Topbar({ now, page, onNav, user, onSignOut, onMenuToggle }) {
+export function Topbar({ now, page, onNav, user, onSignOut, onMenuToggle, search = '', onSearch = () => {} }) {
   const titles = {
     landing: ['Workspace', 'Home'],
     dashboard: ['Workspace', 'Metrics'],
@@ -148,8 +148,24 @@ export function Topbar({ now, page, onNav, user, onSignOut, onMenuToggle }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <div className="search topbar-search">
           {Icon.search}
-          <input placeholder="Search assets, hashes, detections..." />
-          <span className="kbd">⌘K</span>
+          <input
+            id="global-search"
+            value={search}
+            onChange={(e) => onSearch(e.target.value)}
+            placeholder="Search assets, hashes, detections..."
+          />
+          {search ? (
+            <button
+              className="kbd"
+              onClick={() => onSearch('')}
+              title="Clear search"
+              style={{ cursor: 'pointer', border: 'none', background: 'transparent' }}
+            >
+              ✕
+            </button>
+          ) : (
+            <span className="kbd">⌘K</span>
+          )}
         </div>
         <button className="btn primary topbar-newcheck" onClick={() => onNav('check')}>
           {Icon.bolt}New check

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Icon, Counter, Sparkline, Placeholder, ConfBar } from '../components/primitives.jsx';
+import { Icon, Counter, Sparkline, Placeholder, ConfBar, matchesQuery } from '../components/primitives.jsx';
 
-export default function Dashboard({ assets, detections, stats, onOpenDetection, onNav }) {
+export default function Dashboard({ assets, detections, stats, search = '', onOpenDetection, onNav }) {
   const [filter, setFilter] = useState('all');
 
-  const filtered = filter === 'all' ? detections : detections.filter(d => d.type === filter);
+  const byType = filter === 'all' ? detections : detections.filter(d => d.type === filter);
+  const filtered = byType.filter(d => matchesQuery(d, search));
   const scansDone = Math.max(detections.length, stats?.totalDetections || 0);
   const threatsDetected = detections.filter(d => d.type === 'piracy').length;
   const reviewQueue = detections.filter(d => d.type === 'review').length;
@@ -111,6 +112,11 @@ export default function Dashboard({ assets, detections, stats, onOpenDetection, 
               </div>
             );
           })}
+          {filtered.length === 0 && (
+            <div className="mono" style={{ padding: '20px 22px', fontSize: 12, color: 'var(--ink-mute)' }}>
+              {search ? `No detections match "${search}".` : 'No detections yet.'}
+            </div>
+          )}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>

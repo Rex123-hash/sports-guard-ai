@@ -8,6 +8,16 @@ export function formatDetectionTimestamp(detection) {
     : detection?.detected || new Date().toLocaleString();
 }
 
+// Case-insensitive substring match across every string field of an item.
+// Used by the global search box to filter assets and detections.
+export function matchesQuery(item, query) {
+  const q = (query || '').trim().toLowerCase();
+  if (!q) return true;
+  return Object.values(item || {}).some(
+    (v) => typeof v === 'string' && v.toLowerCase().includes(q)
+  );
+}
+
 export function getEvidenceReportData(detection, asset) {
   const generatedAt = new Date().toLocaleString();
   const observedAt = formatDetectionTimestamp(detection);
