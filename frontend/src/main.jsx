@@ -119,7 +119,7 @@ function App({ user }) {
         {page === 'landing'    && <Landing onNav={setPage}/>}
         {page === 'dashboard'  && <Dashboard assets={assets} detections={detections} stats={stats} onOpenDetection={setDrawerDet} onNav={setPage}/>}
         {page === 'guide'      && <Guide onNav={setPage}/>}
-        {page === 'register'   && <Register onNav={setPage} onRegistered={(asset) => {
+        {page === 'register'   && <Register onNav={setPage} assetCount={Math.max(assets.length, stats?.totalAssets || 0)} onRegistered={(asset) => {
           setAssets(prev => {
             const exists = prev.some(existing => existing.id === asset.id);
             setStats(current => ({

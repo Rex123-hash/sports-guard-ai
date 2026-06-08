@@ -52,7 +52,15 @@ async function analyzeImages(originalBuffer, suspectedBuffer) {
 
   const response = await generateWithFallback({
     model: PRIMARY_MODEL,
-    config: { maxOutputTokens: 512, temperature: 0.1, topP: 0.9 },
+    // Gemini 2.5 Flash has "thinking" on by default; those tokens were eating the
+    // 512 budget and truncating the JSON mid-string. Disable thinking and give the
+    // visible output room so the verdict JSON always completes.
+    config: {
+      maxOutputTokens: 2048,
+      temperature: 0.1,
+      topP: 0.9,
+      thinkingConfig: { thinkingBudget: 0 },
+    },
     contents: [
       {
         role: 'user',

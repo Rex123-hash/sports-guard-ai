@@ -3,16 +3,25 @@ import { Icon, Placeholder, ConfDial, buildEvidenceReport, buildEvidenceReportHt
 import { SG_API } from '../services/api.js';
 import { PIPELINE_STEPS } from '../data/sample-data.js';
 
+// Gemini returns `evidence` as a single string, but the UI renders it as a list.
+// Normalize either shape to an array so a piracy verdict renders instead of
+// crashing on `.map()`.
+function asList(value) {
+  if (Array.isArray(value)) return value.filter(Boolean);
+  return value ? [value] : [];
+}
+
+const DEMO_PIRACY_URL = 'https://storage.googleapis.com/sportsguard-assets/suspected/demo-cricket-cropped.jpg';
+
 export default function CheckURL({ assets, onDetection }) {
-  const [url, setUrl] = useState('https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800');
+  const [url, setUrl] = useState(DEMO_PIRACY_URL);
   const [phase, setPhase] = useState('idle');
   const [stepStatus, setStepStatus] = useState([]);
   const [verdict, setVerdict] = useState(null);
 
   const samples = [
-    { url: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?w=800', label: 'Cricket · cropped' },
-    { url: 'https://images.unsplash.com/photo-1504450758481-7338eba7524a?w=800', label: 'Basketball · logo overlay' },
-    { url: 'https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?w=800', label: 'Football · compressed' },
+    { url: DEMO_PIRACY_URL, label: 'Cricket · color-graded copy' },
+    { url: 'https://storage.googleapis.com/sportsguard-assets/originals/008e9516-f0cd-4e94-b12c-d74352572116.jpeg', label: 'Cricket · exact copy' },
     { url: 'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=800', label: 'Unrelated · clean' },
   ];
 
@@ -42,10 +51,10 @@ export default function CheckURL({ assets, onDetection }) {
         geminiVerdict: result.geminiAnalysis?.verdict || result.geminiVerdict || (isClean ? 'NO_MATCH' : 'UNKNOWN'),
         type: isClean ? 'clean' : conf >= 85 ? 'piracy' : 'review',
         asset: result.matchedAsset || assets[0],
-        mod: result.geminiAnalysis?.reasoning?.substring(0, 20) || result.mod || (isClean ? '—' : 'remote source'),
+        mod: result.mod || result.geminiAnalysis?.reasoning?.substring(0, 20) || (isClean ? '—' : 'remote source'),
         reasoning: result.geminiAnalysis?.reasoning || result.reasoning || (isClean ? 'No matching protected content found.' : 'Backend analysis completed.'),
-        evidence: result.geminiAnalysis?.evidence || result.evidence || [],
-        transformations: result.geminiAnalysis?.transformations || result.transformations || [],
+        evidence: asList(result.geminiAnalysis?.evidence ?? result.evidence),
+        transformations: asList(result.geminiAnalysis?.transformations ?? result.transformations),
       };
 
       setVerdict(v); setPhase('done');
@@ -74,7 +83,7 @@ export default function CheckURL({ assets, onDetection }) {
           <div className="page-sub fade-up delay-2">Drop any public URL. We download the asset, fingerprint it, and compare against every registered frame — then a multimodal model adjudicates whether it's a copy.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
-          REGISTRY · 2,184<br/>EVAL THRESHOLD · 85%
+          REGISTRY · {assets.length}<br/>EVAL THRESHOLD · 85%
         </div>
       </div>
 
@@ -123,14 +132,18 @@ export default function CheckURL({ assets, onDetection }) {
           <div className="grid grid-2 gap-3">
             <div className="frame">
               <div className="frame-img">
-                <Placeholder tone="pine" label="REGISTERED" frame="ORIGINAL"/>
+                {verdict?.asset?.imageUrl
+                  ? <img src={verdict.asset.imageUrl} alt="registered original" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  : <Placeholder tone="pine" label="REGISTERED" frame="ORIGINAL"/>}
                 <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>
               </div>
-              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>1920×1080</span></div>
+              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>{verdict?.asset ? 'protected' : '—'}</span></div>
             </div>
             <div className="frame">
               <div className="frame-img">
-                <Placeholder tone={verdict?.type === 'clean' ? 'cream' : 'coral'} label="SUSPECT" frame="REMOTE"/>
+                {url
+                  ? <img src={url} alt="suspect source" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  : <Placeholder tone={verdict?.type === 'clean' ? 'cream' : 'coral'} label="SUSPECT" frame="REMOTE"/>}
                 {phase === 'running' && <span className="frame-tag tag butter">ANALYZING</span>}
                 {phase === 'done' && verdict?.type === 'piracy' && <span className="frame-tag tag solid-coral">PIRATED</span>}
                 {phase === 'done' && verdict?.type === 'review' && <span className="frame-tag tag butter">REVIEW</span>}

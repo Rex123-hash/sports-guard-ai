@@ -108,6 +108,17 @@ export async function signOut() {
   notifySubscribers(null);
 }
 
+export async function getIdToken() {
+  if (auth.currentUser) {
+    try {
+      return await auth.currentUser.getIdToken();
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export function onAuthStateChanged(callback) {
   ensureFirebaseObserver();
   subscribers.add(callback);

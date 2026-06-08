@@ -3,7 +3,7 @@ import { Icon, Placeholder } from '../components/primitives.jsx';
 import { SG_API } from '../services/api.js';
 import { SPORTS, RIGHTS_HOLDERS } from '../data/sample-data.js';
 
-export default function Register({ onRegistered, onNav }) {
+export default function Register({ onRegistered, onNav, assetCount = 0 }) {
   const [step, setStep] = useState('idle');
   const [drag, setDrag] = useState(false);
   const [hash, setHash] = useState('');
@@ -50,7 +50,7 @@ export default function Register({ onRegistered, onNav }) {
           <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives cropping, filtering, and recompression — and stake your claim to it permanently.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
-          REGISTRY · 2,184 ASSETS<br/>BUCKET · sg-originals-eu1
+          REGISTRY · {assetCount} ASSETS<br/>BUCKET · sportsguard-assets
         </div>
       </div>
 
@@ -98,7 +98,7 @@ export default function Register({ onRegistered, onNav }) {
             <div className="mt-6 fade-up">
               <div className="eyebrow mb-2">Perceptual fingerprint</div>
               <div className="hash-block">
-                <div className="hash-label mb-2">phash:64 · DCT · cropping-resilient</div>
+                <div className="hash-label mb-2">dHash:64 · cropping-resilient</div>
                 {hash}
               </div>
               <div className="mono mt-3" style={{ fontSize: 10.5, color: 'var(--ink-mute)' }}>
@@ -186,7 +186,7 @@ export default function Register({ onRegistered, onNav }) {
 
       <div className="attribution">
         <span>SportsGuard · Register</span>
-        <span>fingerprint = pHash 64 · Vision safety · Gemini description</span>
+        <span>fingerprint = dHash 64 · Vision safety · Gemini description</span>
       </div>
     </div>
   );

@@ -74,9 +74,9 @@ export default function Verify() {
     const status = copyrightSeen ? 'Authentic' : artifactCount >= 3 ? 'Needs review' : 'Unverified';
     const anomalies = copyrightSeen ? 'No broadcast tampering indicators detected.' : 'Overlay provenance is incomplete and should be reviewed by an operator.';
     const report = [
-      'SPORTSGUARD GEMINI VERIFICATION REPORT',
+      'SPORTSGUARD CLOUD VISION VERIFICATION REPORT',
       `Generated: ${new Date().toLocaleString()}`,
-      `Model: Gemini 2.5 Flash on Vertex AI`,
+      `Engine: Cloud Vision API (OCR + label detection)`,
       `Source File: ${file?.name || 'uploaded-frame'}`,
       `Authenticity Score: ${authenticity}%`,
       `Status: ${status}`,
@@ -91,7 +91,7 @@ export default function Verify() {
         : 'No textual or ownership overlays were extracted.',
       '',
       'GOOGLE CLOUD TRAIL',
-      'Firebase Auth -> Cloud Run -> Cloud Vision -> Vertex AI Gemini -> Firestore evidence log',
+      'Firebase Auth -> Cloud Run -> Cloud Vision OCR -> Firestore evidence log',
     ].join('\n');
 
     return { authenticity, status, report };
@@ -104,8 +104,8 @@ export default function Verify() {
           <span className="eyebrow fade-up">Step 04 | Verify</span>
           <h1 className="page-title fade-up delay-1">Read the <em>watermark.</em></h1>
           <div className="page-sub fade-up delay-2">
-            Run a frame through Cloud Vision and Gemini-powered provenance checks. The result now surfaces a visible
-            authenticity score, artifact trace, and Google AI verification badge for your demo.
+            Run a frame through Cloud Vision OCR. The result surfaces extracted overlay text, a provenance
+            signal, and an authenticity read drawn from detected copyright and broadcaster marks.
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -116,7 +116,7 @@ export default function Verify() {
               <button className="btn coral lg" onClick={run} disabled={!file}>{Icon.scan} Verify Media</button>
             </>
           )}
-          {phase === 'scanning' && <button className="btn lg" disabled><span className="pipe-spinner"/> Gemini reviewing</button>}
+          {phase === 'scanning' && <button className="btn lg" disabled><span className="pipe-spinner"/> Cloud Vision reading</button>}
           {phase === 'done' && <button className="btn lg" onClick={reset}>New verification</button>}
         </div>
       </div>
@@ -163,28 +163,28 @@ export default function Verify() {
                     }}
                   >
                     {Icon.check}
-                    Analyzed by Gemini 2.5 Flash
+                    Analyzed by Cloud Vision
                   </div>
                   <div className="serif" style={{ fontSize: 32, lineHeight: 1.08, marginTop: 14, fontWeight: 400 }}>
                     {geminiReport.authenticity}% authentic.
                   </div>
                   <div style={{ color: 'var(--ink-2)', fontSize: 14, lineHeight: 1.65, marginTop: 10 }}>
-                    Vertex AI reviewed ownership cues, overlay text, and provenance consistency for this uploaded frame.
+                    Cloud Vision read ownership cues, overlay text, and copyright marks on this uploaded frame.
                   </div>
                 </div>
                 <div style={{ background: 'var(--paper)', border: '1px solid var(--line)', borderRadius: 16, padding: 18 }}>
-                  <div className="mono" style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '0.12em' }}>GOOGLE AI VERDICT</div>
+                  <div className="mono" style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '0.12em' }}>CLOUD VISION VERDICT</div>
                   <div style={{ fontSize: 28, fontWeight: 800, marginTop: 6, color: geminiReport.authenticity >= 90 ? 'var(--moss)' : '#8B6A14' }}>
                     {geminiReport.status}
                   </div>
                   <div style={{ marginTop: 12, display: 'grid', gap: 8 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                      <span style={{ color: 'var(--ink-mute)' }}>Model</span>
-                      <strong>Gemini 2.5 Flash</strong>
+                      <span style={{ color: 'var(--ink-mute)' }}>Engine</span>
+                      <strong>Cloud Vision</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--ink-mute)' }}>Pipeline</span>
-                      <strong>Vertex AI + Vision</strong>
+                      <strong>Cloud Vision OCR</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
                       <span style={{ color: 'var(--ink-mute)' }}>Artifacts</span>
@@ -224,7 +224,7 @@ export default function Verify() {
             <div className="mt-6 fade-up">
               <div className="card" style={{ background: 'linear-gradient(135deg, var(--pine) 0%, var(--pine-2) 100%)', color: 'var(--cream)', borderColor: 'var(--pine)' }}>
                 <div className="card-pad-lg">
-                  <div className="eyebrow" style={{ color: 'var(--butter)' }}>Gemini verification report</div>
+                  <div className="eyebrow" style={{ color: 'var(--butter)' }}>Cloud Vision verification report</div>
                   <pre className="hash-block" style={{ whiteSpace: 'pre-wrap', margin: '12px 0 0 0', background: 'rgba(255,255,255,0.06)', color: '#fff', borderColor: 'rgba(255,255,255,0.12)' }}>
                     {geminiReport.report}
                   </pre>
@@ -245,7 +245,7 @@ export default function Verify() {
 
       <div className="attribution">
         <span>SportsGuard | Verify</span>
-        <span>Cloud Vision | Gemini 2.5 Flash | Vertex AI provenance review</span>
+        <span>Cloud Vision OCR · overlay + copyright-mark read</span>
       </div>
     </div>
   );

@@ -67,7 +67,7 @@ export function Archive({ assets, onNav }) {
 
       <div className="attribution">
         <span>SportsGuard · Registry</span>
-        <span>{assets.length} of 2,184 shown · sorted by recency</span>
+        <span>{assets.length} shown · sorted by recency</span>
       </div>
     </div>
   );

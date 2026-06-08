@@ -8,6 +8,7 @@ const checkRoute = require('./routes/check');
 const verifyRoute = require('./routes/verify');
 const detectionsRoute = require('./routes/detections');
 const assetsRoute = require('./routes/assets');
+const { requireAuth } = require('./modules/auth');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -34,9 +35,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'sportsguard-api', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/register', upload.single('image'), registerRoute);
-app.post('/api/check', checkRoute);
-app.post('/api/verify', upload.single('image'), verifyRoute);
+// Mutating / cost-bearing routes require a valid Firebase ID token
+// (Google sign-in or anonymous guest). Read-only dashboard routes stay public.
+app.post('/api/register', requireAuth, upload.single('image'), registerRoute);
+app.post('/api/check', requireAuth, checkRoute);
+app.post('/api/verify', requireAuth, upload.single('image'), verifyRoute);
 app.get('/api/detections', detectionsRoute);
 app.get('/api/assets', assetsRoute);
 

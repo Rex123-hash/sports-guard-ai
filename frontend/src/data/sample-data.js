@@ -35,8 +35,8 @@ export const SAMPLE_DETECTIONS = [
 export const PIPELINE_STEPS = [
   { name: 'Fetch source', desc: 'Download asset | resolve redirects | safety scan', dur: 480 },
   { name: 'Extract frame', desc: 'Decode image | normalize colorspace', dur: 360 },
-  { name: 'Compute fingerprint', desc: 'pHash | 64-bit DCT | resilient to crop/filter', dur: 540 },
-  { name: 'Search registry', desc: 'Hamming distance against 2,184 protected assets', dur: 460 },
+  { name: 'Compute fingerprint', desc: 'dHash | 64-bit | resilient to filter/recompression', dur: 540 },
+  { name: 'Search registry', desc: 'Hamming distance across the protected registry', dur: 460 },
   { name: 'Visual analysis', desc: 'Multimodal compare | detect transformations', dur: 980 },
   { name: 'Adjudicate', desc: 'Weighted score | 0.4 pHash + 0.6 visual', dur: 320 },
 ];
