@@ -80,7 +80,7 @@ export default function VideoCheck({ assets, onDetection }) {
       if (/moov|invalid data|could not extract|extract frames|no frames/i.test(m)) {
         friendly = "This video couldn't be read. It may be incomplete, still downloading, larger than the 80 MB limit, or in an unsupported format. Re-save it as a standard MP4 (H.264) or try a different clip.";
       } else if (/youtube|download|proxy|not available|unavailable|geo|blocked/i.test(m)) {
-        friendly = "Couldn't download that video. Platform links (YouTube/Instagram/X) can be region-locked or blocked. Try a direct .mp4 link, upload the file, or the sample clip.";
+        friendly = "Couldn't download that video. YouTube is usually blocked from cloud servers (other platforms can occasionally fail too). Easiest fix: upload the file, or use a direct .mp4 link.";
       }
       alert('Video check failed: ' + friendly);
       setPhase('idle');
@@ -125,7 +125,7 @@ export default function VideoCheck({ assets, onDetection }) {
       <div className="card mb-6 fade-up delay-2" style={{ border: '2px solid var(--pine)' }}>
         <div style={{ background: 'var(--pine)', color: '#fff', padding: '10px 22px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--butter)' }}>{Icon.info}</span>
-          <strong>Tip:</strong> direct <strong>.mp4</strong> links work reliably. Platform links (YouTube/IG/X) are best-effort — they're often blocked from cloud servers.
+          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and most platform links (Instagram, X, …) work. <strong>YouTube</strong> is often blocked from cloud servers — upload the file for those.
         </div>
         <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 22px', gap: 10 }}>
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>VIDEO URL</span>
