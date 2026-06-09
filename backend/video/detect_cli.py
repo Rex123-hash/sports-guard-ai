@@ -52,15 +52,23 @@ def fetch_registry_from_api():
 
 
 def build_registry(assets):
-    """Download each original and re-hash in Python (consistent engine)."""
+    """Each entry carries a list of candidate hashes.
+    - Video assets: use the stored per-keyframe hashes (same engine already).
+    - Image assets: download the original and re-hash in Python (consistent engine)."""
     reg = []
     for a in assets:
+        frame_hashes = a.get("frameHashes")
+        if frame_hashes:
+            reg.append({"id": a.get("id"), "title": a.get("title", "—"),
+                        "imageUrl": a.get("imageUrl"), "phashes": list(frame_hashes)})
+            continue
         url = a.get("imageUrl")
         if not url:
             continue
         try:
             img = Image.open(io.BytesIO(urllib.request.urlopen(url, timeout=30).read()))
-            reg.append({"id": a.get("id"), "title": a.get("title", "—"), "imageUrl": url, "phash": dhash(img)})
+            reg.append({"id": a.get("id"), "title": a.get("title", "—"),
+                        "imageUrl": url, "phashes": [dhash(img)]})
         except Exception as e:
             log(f"skip {a.get('title')}: {e}")
     return reg
@@ -88,9 +96,10 @@ def main():
         for ts, img in frames:
             fh = dhash(img)
             for a in registry:
-                s = similarity(fh, a["phash"])
-                if best is None or s > best["sim"]:
-                    best = {"sim": s, "ts": ts, "asset": a, "img": img}
+                for ph in a["phashes"]:
+                    s = similarity(fh, ph)
+                    if best is None or s > best["sim"]:
+                        best = {"sim": s, "ts": ts, "asset": a, "img": img}
 
         result = {"matched": False, "sourceKind": how, "framesScanned": len(frames)}
         if best and best["sim"] >= args.threshold:

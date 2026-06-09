@@ -29,7 +29,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
     }
 
     const assets = await getAllAssets();
-    const slim = assets.filter(a => a.imageUrl).map(a => ({ id: a.id, title: a.title, imageUrl: a.imageUrl }));
+    const slim = assets.filter(a => a.imageUrl).map(a => ({ id: a.id, title: a.title, imageUrl: a.imageUrl, frameHashes: a.frameHashes || null }));
 
     let det;
     try {

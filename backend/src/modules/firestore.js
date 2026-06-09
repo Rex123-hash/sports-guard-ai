@@ -18,7 +18,10 @@ async function saveAsset(data) {
     sport:      data.sport,
     owner:      data.owner,
     license:    data.license,
+    type:       data.type || 'image',
     phash:      data.phash,
+    frameHashes: data.frameHashes || null,   // video assets: one hash per keyframe
+    frameCount: data.frameCount || null,
     description: data.description || '',
     notes:      data.notes || '',
     imageUrl:   data.imageUrl,

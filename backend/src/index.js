@@ -7,6 +7,7 @@ const multer = require('multer');
 const rateLimit = require('express-rate-limit');
 
 const registerRoute = require('./routes/register');
+const registerVideoRoute = require('./routes/registerVideo');
 const checkRoute = require('./routes/check');
 const checkVideoRoute = require('./routes/checkVideo');
 const verifyRoute = require('./routes/verify');
@@ -75,6 +76,7 @@ app.get('/health', (req, res) => {
 // Mutating / cost-bearing routes require a valid Firebase ID token
 // (Google sign-in or anonymous guest). Read-only dashboard routes stay public.
 app.post('/api/register', requireAuth, upload.single('image'), registerRoute);
+app.post('/api/register-video', requireAuth, videoUpload.single('video'), registerVideoRoute);
 app.post('/api/check', requireAuth, checkRoute);
 app.post('/api/check-video', requireAuth, videoUpload.single('video'), checkVideoRoute);
 app.post('/api/verify', requireAuth, upload.single('image'), verifyRoute);

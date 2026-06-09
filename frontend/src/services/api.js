@@ -44,6 +44,22 @@ export const SG_API = {
     return res.json();
   },
 
+  async registerVideo(file, meta) {
+    const form = new FormData();
+    form.append('video', file);
+    form.append('owner', meta.owner);
+    form.append('title', meta.title);
+    form.append('sport', meta.sport);
+    form.append('license', meta.license);
+    form.append('notes', meta.notes || '');
+    const res = await fetch(`${BASE}/api/register-video`, { method: 'POST', headers: await authHeaders(), body: form });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || 'Video registration failed');
+    }
+    return res.json();
+  },
+
   async checkVideo(url) {
     const res = await fetch(`${BASE}/api/check-video`, {
       method: 'POST',

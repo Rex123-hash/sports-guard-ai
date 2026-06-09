@@ -17,6 +17,8 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
   });
   const [file, setFile] = useState(null);
   const [imgUrl, setImgUrl] = useState(null);
+  const [mode, setMode] = useState('photo'); // 'photo' | 'video'
+  const [frameCount, setFrameCount] = useState(0);
 
   function pickFile(f) {
     if (!f) return;
@@ -37,17 +39,26 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
     if (!file) return;
     setStep('hashing');
     try {
-      const result = await SG_API.register(file, meta);
-      setHash(result.phash || result.assetId);
-      setStep('done');
-      onRegistered && onRegistered(result.asset || { ...meta, phash: result.phash || result.assetId });
+      if (mode === 'video') {
+        const result = await SG_API.registerVideo(file, meta);
+        setHash(result.asset?.phash || result.assetId);
+        setFrameCount(result.frameCount || 0);
+        setStep('done');
+        onRegistered && onRegistered(result.asset || { ...meta, type: 'video', phash: result.assetId });
+      } else {
+        const result = await SG_API.register(file, meta);
+        setHash(result.phash || result.assetId);
+        setStep('done');
+        onRegistered && onRegistered(result.asset || { ...meta, phash: result.phash || result.assetId });
+      }
     } catch (err) {
       console.error(err);
       alert('Registration failed: ' + err.message);
       setStep('metadata');
     }
   }
-  function reset() { if (imgUrl) URL.revokeObjectURL(imgUrl); setStep('idle'); setHash(''); setFile(null); setImgUrl(null); setProgress(0); }
+  function reset() { if (imgUrl) URL.revokeObjectURL(imgUrl); setStep('idle'); setHash(''); setFile(null); setImgUrl(null); setProgress(0); setFrameCount(0); }
+  function switchMode(m) { if (m !== mode) { reset(); setMode(m); } }
 
   return (
     <div className="page">
@@ -62,6 +73,13 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
         </div>
       </div>
 
+      <div className="fade-up delay-2" style={{ display: 'flex', gap: 8, marginBottom: 22 }}>
+        {[['photo', 'Photo'], ['video', 'Video']].map(([m, label]) => (
+          <button key={m} className={`btn ${mode === m ? 'primary' : 'ghost'}`}
+            style={{ border: mode === m ? '' : '1px solid var(--line)' }} onClick={() => switchMode(m)}>{label}</button>
+        ))}
+      </div>
+
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 32 }}>
         <div className="fade-up delay-2">
           <div className="eyebrow mb-3">Source frame</div>
@@ -72,14 +90,14 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
               onDrop={handleDrop}
               onClick={() => document.getElementById('fileUpload').click()}
               style={{ minHeight: 420 }}>
-              <input type="file" id="fileUpload" style={{ display: 'none' }} accept="image/*" onChange={handleFileChange} />
+              <input type="file" id="fileUpload" style={{ display: 'none' }} accept={mode === 'video' ? 'video/*' : 'image/*'} onChange={handleFileChange} />
               <div className="upload-glyph">{Icon.upload}</div>
-              <div className="serif" style={{ fontSize: 32, lineHeight: 1.1, fontWeight: 400 }}>Drop a frame here</div>
-              <div className="mono mt-3" style={{ fontSize: 12, color: 'var(--ink-mute)', letterSpacing: '0.06em' }}>JPG · PNG · WebP · up to 25 MB · or click to browse</div>
+              <div className="serif" style={{ fontSize: 32, lineHeight: 1.1, fontWeight: 400 }}>{mode === 'video' ? 'Drop a video clip here' : 'Drop a frame here'}</div>
+              <div className="mono mt-3" style={{ fontSize: 12, color: 'var(--ink-mute)', letterSpacing: '0.06em' }}>{mode === 'video' ? 'MP4 · WebM · MOV · up to 80 MB · or click to browse' : 'JPG · PNG · WebP · up to 25 MB · or click to browse'}</div>
               <div className="mt-6" style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
-                <span className="tag">pHash 64-bit</span>
-                <span className="tag">Vision safety</span>
-                <span className="tag">Chain of custody</span>
+                {mode === 'video'
+                  ? <><span className="tag">Keyframe dHash</span><span className="tag">Every frame</span><span className="tag">Chain of custody</span></>
+                  : <><span className="tag">pHash 64-bit</span><span className="tag">Vision safety</span><span className="tag">Chain of custody</span></>}
               </div>
             </div>
           )}
@@ -88,7 +106,9 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
             <div className="frame">
               <div className="frame-img" style={{ aspectRatio: '4/3', position: 'relative' }}>
                 {imgUrl
-                  ? <img src={imgUrl} alt="frame to register" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ? (mode === 'video'
+                      ? <video src={imgUrl} muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <img src={imgUrl} alt="frame to register" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)
                   : <Placeholder tone="pine" label="FRAME" frame="—" live={step !== 'done'}/>}
                 {step === 'done' && <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>}
                 {step === 'uploading' && (
@@ -106,9 +126,9 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
 
           {step === 'done' && (
             <div className="mt-6 fade-up">
-              <div className="eyebrow mb-2">Perceptual fingerprint</div>
+              <div className="eyebrow mb-2">{mode === 'video' ? 'Protected keyframes' : 'Perceptual fingerprint'}</div>
               <div className="hash-block">
-                <div className="hash-label mb-2">dHash:64 · cropping-resilient</div>
+                <div className="hash-label mb-2">{mode === 'video' ? `dHash:64 · ${frameCount} keyframe${frameCount === 1 ? '' : 's'} fingerprinted` : 'dHash:64 · cropping-resilient'}</div>
                 {hash}
               </div>
               <div className="mono mt-3" style={{ fontSize: 10.5, color: 'var(--ink-mute)' }}>
@@ -174,8 +194,8 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
               <div className="card" style={{ background: 'linear-gradient(135deg, var(--moss) 0%, #4A8E63 100%)', color: '#fff', borderColor: '#4A8E63' }}>
                 <div className="card-pad-lg" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
                   <div>
-                    <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.85)' }}>Asset filed · 0.94s</div>
-                    <div className="serif" style={{ fontSize: 26, lineHeight: 1.1, marginTop: 6, fontWeight: 400 }}>Your frame is now under watch.</div>
+                    <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.85)' }}>{mode === 'video' ? `Clip filed · ${frameCount} keyframe${frameCount === 1 ? '' : 's'}` : 'Asset filed · 0.94s'}</div>
+                    <div className="serif" style={{ fontSize: 26, lineHeight: 1.1, marginTop: 6, fontWeight: 400 }}>{mode === 'video' ? 'Your clip is now under watch.' : 'Your frame is now under watch.'}</div>
                     <div className="mono mt-2" style={{ fontSize: 11, opacity: 0.85 }}>Continuously matched against any URL submitted to SportsGuard</div>
                   </div>
                   <button className="btn" style={{ background: '#fff', color: 'var(--moss)', borderColor: '#fff' }} onClick={() => onNav && onNav('check')}>

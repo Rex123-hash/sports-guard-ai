@@ -53,9 +53,12 @@ module.exports = async function checkHandler(req, res, next) {
 
     let bestAsset = null, bestSim = 0;
     for (const a of assets) {
-      if (!a.phash) continue;
-      const s = similarity(a.phash, suspectedHash);
-      if (s > bestSim) { bestSim = s; bestAsset = a; }
+      // Image asset: one hash. Video asset: one hash per registered keyframe.
+      const hashes = (a.frameHashes && a.frameHashes.length) ? a.frameHashes : (a.phash ? [a.phash] : []);
+      for (const h of hashes) {
+        const s = similarity(h, suspectedHash);
+        if (s > bestSim) { bestSim = s; bestAsset = a; }
+      }
     }
 
     // 4. No match

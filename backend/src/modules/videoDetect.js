@@ -45,4 +45,35 @@ function runVideoDetection(source, assets = []) {
   });
 }
 
-module.exports = { runVideoDetection };
+/**
+ * Runs the embedded Python registration fingerprinter on a video.
+ * @param {string} source - path to the uploaded video
+ * @returns {Promise<object>} { frameCount, frameHashes, thumbB64 } | { error }
+ */
+function runVideoRegister(source) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(PYTHON_BIN, ['register_cli.py', '--source', source], { cwd: VIDEO_DIR });
+
+    let out = '';
+    let err = '';
+    const timer = setTimeout(() => {
+      proc.kill('SIGKILL');
+      reject(new Error('video registration timed out'));
+    }, TIMEOUT_MS);
+
+    proc.stdout.on('data', (d) => { out += d; });
+    proc.stderr.on('data', (d) => { err += d; });
+    proc.on('error', (e) => { clearTimeout(timer); reject(e); });
+    proc.on('close', () => {
+      clearTimeout(timer);
+      const line = out.trim().split('\n').filter(Boolean).pop();
+      try {
+        resolve(JSON.parse(line));
+      } catch {
+        reject(new Error('register CLI returned no JSON: ' + (err || out).slice(0, 300)));
+      }
+    });
+  });
+}
+
+module.exports = { runVideoDetection, runVideoRegister };
