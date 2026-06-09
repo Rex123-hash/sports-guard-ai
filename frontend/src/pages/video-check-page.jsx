@@ -76,7 +76,11 @@ export default function VideoCheck({ assets, onDetection }) {
     } catch (err) {
       clearInterval(interval);
       console.error(err);
-      alert('Video check failed: ' + err.message);
+      const m = err.message || '';
+      const friendly = /youtube|download|proxy|not available|unavailable|geo|blocked/i.test(m)
+        ? "Couldn't download that video. Platform links (YouTube/Instagram/X) can be region-locked or blocked. Try a direct .mp4 link or the sample clip."
+        : m;
+      alert('Video check failed: ' + friendly);
       setPhase('idle');
     }
   }
@@ -94,7 +98,7 @@ export default function VideoCheck({ assets, onDetection }) {
         <div>
           <span className="eyebrow fade-up">Step 03b · Scan Video</span>
           <h1 className="page-title fade-up delay-1">Scan the <em>whole clip.</em></h1>
-          <div className="page-sub fade-up delay-2">Paste a video URL (direct .mp4 or a YouTube/Instagram/X link). We pull keyframes, fingerprint each one, and find any registered frame hidden inside — then a multimodal model adjudicates the match.</div>
+          <div className="page-sub fade-up delay-2">Paste a video URL (direct .mp4 or a YouTube/Instagram/X link). We pull keyframes, fingerprint each one, and find any registered frame hidden inside the clip, then a multimodal model adjudicates the match.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
           REGISTRY · {assets.length}<br/>EVAL THRESHOLD · 85%
@@ -179,7 +183,7 @@ export default function VideoCheck({ assets, onDetection }) {
                 <div>
                   <div className="verdict-title">{vTitle}</div>
                   <div className="verdict-headline">
-                    {verdict.type === 'piracy' && <>Found in the clip at {fmtTime(verdict.timestamp)} —<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
+                    {verdict.type === 'piracy' && <>Found in the clip at {fmtTime(verdict.timestamp)}:<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
                     {verdict.type === 'review' && 'Partial overlap detected — needs a human check.'}
                     {verdict.type === 'clean' && 'No registered frame appears in this video.'}
                   </div>

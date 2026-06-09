@@ -45,7 +45,7 @@ export default function Guide({ onNav }) {
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Video Scanning</h3>
-              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Paste a video URL (direct .mp4 or a YouTube/Instagram/X link). Keyframes are extracted and fingerprinted, and Gemini adjudicates any registered frame found inside — with the exact timestamp it appears.</p>
+              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Paste a video URL (direct .mp4 or a YouTube/Instagram/X link). Keyframes are extracted and fingerprinted, and Gemini adjudicates any registered frame found inside the clip, reporting the exact timestamp it appears.</p>
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Gemini Verification</h3>
