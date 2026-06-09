@@ -18,6 +18,7 @@ export default function CheckURL({ assets, onDetection }) {
   const [phase, setPhase] = useState('idle');
   const [stepStatus, setStepStatus] = useState([]);
   const [verdict, setVerdict] = useState(null);
+  const [suspectDims, setSuspectDims] = useState(null); // real WxH of the suspect image
 
   const samples = [
     { url: DEMO_PIRACY_URL, label: 'Cricket · color-graded copy' },
@@ -27,7 +28,7 @@ export default function CheckURL({ assets, onDetection }) {
 
   async function run(u) {
     const target = u || url;
-    setUrl(target); setPhase('running'); setVerdict(null);
+    setUrl(target); setPhase('running'); setVerdict(null); setSuspectDims(null);
     setStepStatus(PIPELINE_STEPS.map(() => 'queued'));
 
     let i = 0;
@@ -67,7 +68,7 @@ export default function CheckURL({ assets, onDetection }) {
     }
   }
 
-  function reset() { setPhase('idle'); setVerdict(null); setStepStatus([]); }
+  function reset() { setPhase('idle'); setVerdict(null); setStepStatus([]); setSuspectDims(null); }
 
   const verdictType = verdict?.type === 'piracy' ? 'piracy' : verdict?.type === 'review' ? 'warn' : 'clean';
   const verdictTitle = verdict?.type === 'piracy' ? 'Piracy confirmed' : verdict?.type === 'review' ? 'Inconclusive · queue review' : 'No match · clean';
@@ -142,14 +143,14 @@ export default function CheckURL({ assets, onDetection }) {
             <div className="frame">
               <div className="frame-img">
                 {url
-                  ? <img src={url} alt="suspect source" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                  ? <img src={url} alt="suspect source" onLoad={e => setSuspectDims(`${e.target.naturalWidth}×${e.target.naturalHeight}`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                   : <Placeholder tone={verdict?.type === 'clean' ? 'cream' : 'coral'} label="SUSPECT" frame="REMOTE"/>}
                 {phase === 'running' && <span className="frame-tag tag butter">ANALYZING</span>}
                 {phase === 'done' && verdict?.type === 'piracy' && <span className="frame-tag tag solid-coral">PIRATED</span>}
                 {phase === 'done' && verdict?.type === 'review' && <span className="frame-tag tag butter">REVIEW</span>}
                 {phase === 'done' && verdict?.type === 'clean' && <span className="frame-tag tag moss">CLEAN</span>}
               </div>
-              <div className="frame-cap"><span>{verdict?.mod ? `mod: ${verdict.mod}` : 'remote source'}</span><span>{phase === 'done' ? '1280×720' : '?'}</span></div>
+              <div className="frame-cap"><span>{verdict?.mod ? `mod: ${verdict.mod}` : 'remote source'}</span><span>{suspectDims || '?'}</span></div>
             </div>
           </div>
 
