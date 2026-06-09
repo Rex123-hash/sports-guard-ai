@@ -119,7 +119,7 @@ export default function Verify() {
             <div className="scan-frame" style={{ position: 'relative', overflow: 'hidden', background: '#0b1220', display: 'flex' }}>
               {imgUrl
                 ? <img src={imgUrl} alt="uploaded frame" style={{ display: 'block', width: '100%', height: 'auto' }} />
-                : <div style={{ width: '100%', aspectRatio: '16/10' }}><Placeholder tone="pine" label="UPLOAD A FRAME" frame="—" /></div>}
+                : <div style={{ width: '100%', aspectRatio: '16/10' }}><Placeholder tone="pine" label="UPLOAD A FRAME" frame="-" /></div>}
 
               {phase !== 'idle' && imgUrl && <div className="scan-grid" style={{ position: 'absolute', inset: 0 }} />}
               {phase === 'scanning' && <div className="scan-beam" />}

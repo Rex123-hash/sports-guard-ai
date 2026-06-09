@@ -15,7 +15,7 @@ export function Archive({ assets, search = '', onNav }) {
         <div>
           <span className="eyebrow fade-up">Archive · 05</span>
           <h1 className="page-title fade-up delay-1">Asset <em>registry.</em></h1>
-          <div className="page-sub fade-up delay-2">Every frame currently under SportsGuard watch — fingerprinted, filed, and continuously matched against any URL submitted to the system.</div>
+          <div className="page-sub fade-up delay-2">Every frame currently under SportsGuard watch: fingerprinted, filed, and continuously matched against any URL submitted to the system.</div>
         </div>
         <button className="btn primary fade-up delay-2" onClick={() => onNav('register')}>{Icon.upload}Register asset</button>
       </div>
@@ -94,7 +94,7 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
         <div>
           <span className="eyebrow fade-up">Archive · 06</span>
           <h1 className="page-title fade-up delay-1">Detection <em>log.</em></h1>
-          <div className="page-sub fade-up delay-2">Permanent record of every URL the system has adjudicated — searchable, sortable, exportable for takedown filings.</div>
+          <div className="page-sub fade-up delay-2">Permanent record of every URL the system has adjudicated: searchable, sortable, exportable for takedown filings.</div>
         </div>
       </div>
       <div className="card fade-up delay-2">
@@ -110,7 +110,7 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
               <div className="det-thumb"><Placeholder tone={tone} label={(asset?.sport || d.sport || '').toUpperCase().slice(0, 3)} frame={asset?.frame || d.frame}/></div>
               <div>
                 <div style={{ fontWeight: 500, fontSize: 13.5 }}>{d.url}</div>
-                <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title || d.title || '—'} · mod: {d.mod}</div>
+                <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title || d.title || '-'} · mod: {d.mod}</div>
               </div>
               <ConfBar value={d.phashSim}/>
               <ConfBar value={d.confidence}/>
@@ -152,7 +152,7 @@ export function Drawer({ detection, assets, onClose, onReview }) {
           </div>
           <div className="serif mt-3" style={{ fontSize: 40, lineHeight: 1.05, letterSpacing: '-0.03em', fontWeight: 400, fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}>
             {detection.type === 'piracy' && 'Unauthorized copy.'}
-            {detection.type === 'review' && 'Inconclusive — needs review.'}
+            {detection.type === 'review' && 'Inconclusive; needs review.'}
             {detection.type === 'clean' && 'No match.'}
           </div>
           <div className="mono mt-3" style={{ fontSize: 11.5, color: 'var(--ink-mute)', wordBreak: 'break-all' }}>{detection.url}</div>

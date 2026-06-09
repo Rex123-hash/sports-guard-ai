@@ -66,7 +66,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
         <div>
           <span className="eyebrow fade-up">Step 02 · Register</span>
           <h1 className="page-title fade-up delay-1">Print a <em>fingerprint.</em></h1>
-          <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives cropping, filtering, and recompression — and stake your claim to it permanently.</div>
+          <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives cropping, filtering, and recompression, then stake your claim to it permanently.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
           REGISTRY · {assetCount} ASSETS<br/>BUCKET · sportsguard-assets
@@ -109,7 +109,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
                   ? (mode === 'video'
                       ? <video src={imgUrl} muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       : <img src={imgUrl} alt="frame to register" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />)
-                  : <Placeholder tone="pine" label="FRAME" frame="—" live={step !== 'done'}/>}
+                  : <Placeholder tone="pine" label="FRAME" frame="-" live={step !== 'done'}/>}
                 {step === 'done' && <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>}
                 {step === 'uploading' && (
                   <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, background: 'rgba(0,0,0,0.25)', zIndex: 5 }}>

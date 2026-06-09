@@ -8,7 +8,7 @@ function asList(value) {
 }
 
 function fmtTime(s) {
-  if (s == null) return '—';
+  if (s == null) return '-';
   const m = Math.floor(s / 60);
   const sec = Math.round(s % 60);
   return `${m}:${String(sec).padStart(2, '0')}`;
@@ -69,7 +69,7 @@ export default function VideoCheck({ assets, onDetection }) {
         reasoning: r.reasoning || (isClean ? 'No registered content was found in this video.' : 'Analysis completed.'),
         evidence: asList(r.evidence),
         transformations: asList(r.transformations),
-        mod: r.mod || '—',
+        mod: r.mod || '-',
       };
       setVerdict(v); setPhase('done');
       if (v.type !== 'clean') onDetection && onDetection(v);
@@ -126,7 +126,7 @@ export default function VideoCheck({ assets, onDetection }) {
       <div className="card mb-6 fade-up delay-2" style={{ border: '2px solid var(--pine)' }}>
         <div style={{ background: 'var(--pine)', color: '#fff', padding: '10px 22px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--butter)' }}>{Icon.info}</span>
-          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and most platform links (Instagram, X, …) work. <strong>YouTube</strong> is often blocked from cloud servers — upload the file for those.
+          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and most platform links (Instagram, X, …) work. <strong>YouTube</strong> is often blocked from cloud servers; upload the file for those.
         </div>
         <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 22px', gap: 10 }}>
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>VIDEO URL</span>
@@ -169,7 +169,7 @@ export default function VideoCheck({ assets, onDetection }) {
           </div>
           {phase === 'done' && verdict && (
             <div className="mono mt-3" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>
-              scanned {verdict.framesScanned ?? '—'} keyframes · source: {verdict.sourceKind || '—'}
+              scanned {verdict.framesScanned ?? '-'} keyframes · source: {verdict.sourceKind || '-'}
             </div>
           )}
         </div>
@@ -184,7 +184,7 @@ export default function VideoCheck({ assets, onDetection }) {
                   : <Placeholder tone="pine" label="REGISTERED" frame="ORIGINAL"/>}
                 <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>
               </div>
-              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>{verdict?.asset ? 'protected' : '—'}</span></div>
+              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>{verdict?.asset ? 'protected' : '-'}</span></div>
             </div>
             <div className="frame">
               <div className="frame-img">
@@ -196,7 +196,7 @@ export default function VideoCheck({ assets, onDetection }) {
                 {phase === 'done' && verdict?.type === 'review' && <span className="frame-tag tag butter">REVIEW</span>}
                 {phase === 'done' && verdict?.type === 'clean' && <span className="frame-tag tag moss">CLEAN</span>}
               </div>
-              <div className="frame-cap"><span>{verdict?.type !== 'clean' && verdict?.timestamp != null ? `found at ${fmtTime(verdict.timestamp)}` : 'video frame'}</span><span>{verdict?.mod && verdict.type !== 'clean' ? `mod: ${verdict.mod}` : '—'}</span></div>
+              <div className="frame-cap"><span>{verdict?.type !== 'clean' && verdict?.timestamp != null ? `found at ${fmtTime(verdict.timestamp)}` : 'video frame'}</span><span>{verdict?.mod && verdict.type !== 'clean' ? `mod: ${verdict.mod}` : '-'}</span></div>
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export default function VideoCheck({ assets, onDetection }) {
                   <div className="verdict-title">{vTitle}</div>
                   <div className="verdict-headline">
                     {verdict.type === 'piracy' && <>Found in the clip at {fmtTime(verdict.timestamp)}:<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
-                    {verdict.type === 'review' && 'Partial overlap detected — needs a human check.'}
+                    {verdict.type === 'review' && 'Partial overlap detected; needs a human check.'}
                     {verdict.type === 'clean' && 'No registered frame appears in this video.'}
                   </div>
                 </div>
@@ -231,8 +231,8 @@ export default function VideoCheck({ assets, onDetection }) {
               {verdict.evidence.length > 0 && (
                 <div className="mt-6">
                   <div className="eyebrow mb-3">Evidence</div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {verdict.evidence.map((e, i) => <span key={i} className="tag">· {e}</span>)}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {verdict.evidence.map((e, i) => <div key={i} className="mono" style={{ fontSize: 12, lineHeight: 1.55, color: 'var(--ink-2)', overflowWrap: 'anywhere' }}>· {e}</div>)}
                   </div>
                 </div>
               )}

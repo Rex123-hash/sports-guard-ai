@@ -52,7 +52,7 @@ export default function CheckURL({ assets, onDetection }) {
         geminiVerdict: result.geminiAnalysis?.verdict || result.geminiVerdict || (isClean ? 'NO_MATCH' : 'UNKNOWN'),
         type: isClean ? 'clean' : conf >= 85 ? 'piracy' : 'review',
         asset: result.matchedAsset || assets[0],
-        mod: result.mod || result.geminiAnalysis?.reasoning?.substring(0, 20) || (isClean ? '—' : 'remote source'),
+        mod: result.mod || result.geminiAnalysis?.reasoning?.substring(0, 20) || (isClean ? '-' : 'remote source'),
         reasoning: result.geminiAnalysis?.reasoning || result.reasoning || (isClean ? 'No matching protected content found.' : 'Backend analysis completed.'),
         evidence: asList(result.geminiAnalysis?.evidence ?? result.evidence),
         transformations: asList(result.geminiAnalysis?.transformations ?? result.transformations),
@@ -81,7 +81,7 @@ export default function CheckURL({ assets, onDetection }) {
         <div>
           <span className="eyebrow fade-up">Step 03 · Check</span>
           <h1 className="page-title fade-up delay-1">Pull a <em>thread.</em></h1>
-          <div className="page-sub fade-up delay-2">Drop any public URL. We download the asset, fingerprint it, and compare against every registered frame — then a multimodal model adjudicates whether it's a copy.</div>
+          <div className="page-sub fade-up delay-2">Drop any public URL. We download the asset, fingerprint it, and compare against every registered frame, then a multimodal model adjudicates whether it's a copy.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
           REGISTRY · {assets.length}<br/>EVAL THRESHOLD · 85%
@@ -138,7 +138,7 @@ export default function CheckURL({ assets, onDetection }) {
                   : <Placeholder tone="pine" label="REGISTERED" frame="ORIGINAL"/>}
                 <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>
               </div>
-              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>{verdict?.asset ? 'protected' : '—'}</span></div>
+              <div className="frame-cap"><span>{verdict?.asset?.title?.split(' · ')[0] || 'matched original'}</span><span>{verdict?.asset ? 'protected' : '-'}</span></div>
             </div>
             <div className="frame">
               <div className="frame-img">
@@ -161,7 +161,7 @@ export default function CheckURL({ assets, onDetection }) {
                 <div>
                   <div className="verdict-title">{verdictTitle}</div>
                   <div className="verdict-headline">
-                    {verdict.type === 'piracy' && <>Cropped, filtered — same scene as<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
+                    {verdict.type === 'piracy' && <>Cropped, filtered; same scene as<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
                     {verdict.type === 'review' && 'Visual fragments overlap, but signal is partial.'}
                     {verdict.type === 'clean' && 'Nothing in the registry resembles this image.'}
                   </div>
@@ -187,8 +187,8 @@ export default function CheckURL({ assets, onDetection }) {
               {verdict.evidence.length > 0 && (
                 <div className="mt-6">
                   <div className="eyebrow mb-3">Evidence</div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {verdict.evidence.map((e, i) => <span key={i} className="tag">· {e}</span>)}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {verdict.evidence.map((e, i) => <div key={i} className="mono" style={{ fontSize: 12, lineHeight: 1.55, color: 'var(--ink-2)', overflowWrap: 'anywhere' }}>· {e}</div>)}
                   </div>
                 </div>
               )}

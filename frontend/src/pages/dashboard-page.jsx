@@ -103,7 +103,7 @@ export default function Dashboard({ assets, detections, stats, search = '', onOp
                 <div className="det-thumb"><Placeholder tone={tone} label={(asset?.sport || d.sport || '').toUpperCase().slice(0, 3)} frame={asset?.frame || d.frame} /></div>
                 <div>
                   <div style={{ fontWeight: 500, fontSize: 13.5 }}>{d.url}</div>
-                  <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title || d.title || '—'} | mod: {d.mod}</div>
+                  <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title || d.title || '-'} | mod: {d.mod}</div>
                 </div>
                 <ConfBar value={d.phashSim} />
                 <ConfBar value={d.confidence} />

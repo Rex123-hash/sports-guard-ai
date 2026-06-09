@@ -50,12 +50,12 @@ export const THREAT_MAP_POINTS = [
 ];
 
 export const CLOUD_STACK = [
-  { service: 'Firebase Auth', role: 'Google sign-in for authorised rights holders' },
-  { service: 'Cloud Storage', role: 'Stores uploaded frames and evidence artifacts' },
-  { service: 'Cloud Run', role: 'Runs registration, scan, and verification APIs' },
-  { service: 'Vertex AI Gemini', role: 'Adjudicates similarity and authenticity' },
-  { service: 'Cloud Vision', role: 'Extracts overlays, copyright text, and marks' },
-  { service: 'Firestore', role: 'Streams detections and registry status to the dashboard' },
+  { service: 'Gemini 2.5 Flash · Vertex AI', role: 'Multimodal verdict on image and video-frame matches, plus frame provenance' },
+  { service: 'Cloud Vision', role: 'OCR for broadcaster overlays and copyright marks, plus upload safety checks' },
+  { service: 'Cloud Run', role: 'Runs the Node API and the embedded Python video pipeline; scales to zero' },
+  { service: 'Cloud Firestore', role: 'Protected-asset registry, detection log, and live dashboard metrics' },
+  { service: 'Cloud Storage', role: 'Original frames, registered video keyframes, and evidence artifacts' },
+  { service: 'Firebase Auth + Hosting', role: 'Google / guest sign-in and global CDN delivery of the app' },
 ];
 
 export const SG_DATA = {
