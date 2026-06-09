@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon, Placeholder, ConfBar, EvidenceReportDocument, buildEvidenceReport, buildEvidenceReportHtml, buildDmcaNotice, buildVerificationCertificate, copyTextToClipboard, downloadHtmlFile, downloadTextFile, matchesQuery } from '../components/primitives.jsx';
 
 export function Archive({ assets, search = '', onNav }) {
@@ -53,22 +54,28 @@ export function Archive({ assets, search = '', onNav }) {
         )}
       </div>
 
-      {selectedAsset && (
-        <div className="card mt-6 fade-up delay-3">
-          <div className="card-head"><h3>Verification certificate</h3><button className="btn ghost" onClick={() => setSelectedAsset(null)}>Close</button></div>
-          <div className="card-pad-lg">
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-              <span className="tag solid-moss">{Icon.shield} VERIFIED BY SPORTSGUARD</span>
-              <span className="tag moss">{selectedAsset.owner}</span>
-              <span className="tag">{selectedAsset.sport}</span>
-            </div>
-            <pre className="hash-block" style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{certificateText(selectedAsset)}</pre>
-            <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-              <button className="btn" onClick={() => copyTextToClipboard(certificateText(selectedAsset))}>{Icon.copy}Copy certificate</button>
-              <button className="btn primary" onClick={() => downloadCertificate(selectedAsset)}>{Icon.doc}Download certificate</button>
+      {selectedAsset && createPortal(
+        <>
+          <div className="drawer-overlay" style={{ zIndex: 999 }} onClick={() => setSelectedAsset(null)} />
+          <div role="dialog" aria-modal="true" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 1000, width: 'min(680px, 92vw)', maxHeight: '86vh', overflowY: 'auto' }}>
+            <div className="card fade-up">
+              <div className="card-head"><h3>Verification certificate</h3><button className="btn ghost" onClick={() => setSelectedAsset(null)}>Close</button></div>
+              <div className="card-pad-lg">
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                  <span className="tag solid-moss">{Icon.shield} VERIFIED BY SPORTSGUARD</span>
+                  <span className="tag moss">{selectedAsset.owner}</span>
+                  <span className="tag">{selectedAsset.sport}</span>
+                </div>
+                <pre className="hash-block" style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{certificateText(selectedAsset)}</pre>
+                <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
+                  <button className="btn" onClick={() => copyTextToClipboard(certificateText(selectedAsset))}>{Icon.copy}Copy certificate</button>
+                  <button className="btn primary" onClick={() => downloadCertificate(selectedAsset)}>{Icon.doc}Download certificate</button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </>,
+        document.body
       )}
 
       <div className="attribution">

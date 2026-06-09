@@ -1003,16 +1003,19 @@ body {
 /* DETECTION ROW */
 .det-row {
   display: grid;
-  grid-template-columns: 100px 60px 1fr 130px 130px 110px 28px;
+  grid-template-columns: 88px 54px minmax(0, 1fr) 104px 104px 100px 22px;
   align-items: center;
   padding: 14px 22px;
   border-bottom: 1px solid var(--line-2);
-  gap: 18px;
+  gap: 14px;
   font-size: 13.5px;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.15s ease;
   position: relative;
 }
+/* Keep long source URLs from forcing the grid wider than its card */
+.det-row > * { min-width: 0; }
+.det-row > div > div { overflow-wrap: anywhere; }
 .det-row:hover { background: var(--cream); }
 .det-row.head {
   cursor: default;
