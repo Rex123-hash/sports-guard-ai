@@ -103,6 +103,83 @@ async function describeImage(imageBuffer) {
   return response.candidates[0].content.parts[0].text.trim();
 }
 
+const VERIFY_PROMPT = `You are a sports broadcast provenance analyst. You receive one image frame plus any text an OCR engine extracted from it.
+
+Decide whether this looks like an AUTHENTIC, licensed broadcast or press frame, versus an unverified, repurposed, or synthetic image.
+
+Weigh evidence such as:
+- Broadcaster overlays, score bugs / scoreboards, channel logos, lower-thirds
+- Copyright, watermark, or agency marks (Getty, Reuters, AP, AFP, broadcaster names, the © symbol)
+- Editorial / press-pool markings
+- Signs of re-capture, screenshots, heavy compression, cropping of overlays, or synthetic generation
+- Whether the OCR text contains ownership or licensing cues
+
+Respond with ONLY valid JSON, no markdown, exactly this schema:
+{
+  "authenticity": <integer 0-100>,
+  "status": "Authentic" | "Likely authentic" | "Needs review" | "Unverified",
+  "reasoning": "<one or two sentences explaining the call>",
+  "signals": ["<short provenance signal>", "<short provenance signal>"]
+}
+
+GUIDE:
+- 85-100 Authentic: clear broadcaster/agency marks or official overlays
+- 65-84 Likely authentic / Needs review: some cues but incomplete or ambiguous
+- 0-64 Unverified: no ownership cues, looks generic, repurposed, or synthetic`;
+
+/**
+ * Uses Gemini to assess the provenance/authenticity of an uploaded frame,
+ * combining the visual content with OCR text. Powers the Verify Frame feature.
+ * @param {Buffer} imageBuffer
+ * @param {string} ocrText - text extracted by Cloud Vision OCR
+ * @returns {Promise<{authenticity:number, status:string, reasoning:string, signals:string[]}>}
+ */
+async function verifyAuthenticity(imageBuffer, ocrText) {
+  const base64 = imageBuffer.toString('base64');
+  const mime = detectMime(imageBuffer);
+
+  const response = await generateWithFallback({
+    model: PRIMARY_MODEL,
+    config: { maxOutputTokens: 1024, temperature: 0.2, topP: 0.9, thinkingConfig: { thinkingBudget: 0 } },
+    contents: [
+      {
+        role: 'user',
+        parts: [
+          { text: VERIFY_PROMPT },
+          { text: 'OCR-extracted text from the image:\n' + (ocrText && ocrText.trim() ? ocrText : '(no text detected)') },
+          { inlineData: { mimeType: mime, data: base64 } },
+        ],
+      },
+    ],
+  });
+
+  const text = response.candidates[0].content.parts[0].text.trim();
+  return parseVerifyResponse(text);
+}
+
+function parseVerifyResponse(text) {
+  const cleaned = text.replace(/^```json?\n?/i, '').replace(/\n?```$/i, '').trim();
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Gemini returned unparseable verify response: ' + text.slice(0, 200));
+    parsed = JSON.parse(match[0]);
+  }
+
+  const status = ['Authentic', 'Likely authentic', 'Needs review', 'Unverified'].includes(parsed.status)
+    ? parsed.status
+    : 'Needs review';
+
+  return {
+    authenticity: Math.min(100, Math.max(0, parseInt(parsed.authenticity) || 0)),
+    status,
+    reasoning: String(parsed.reasoning || ''),
+    signals: Array.isArray(parsed.signals) ? parsed.signals.map(String).slice(0, 6) : [],
+  };
+}
+
 async function generateWithFallback(request) {
   try {
     return await ai.models.generateContent(request);
@@ -160,4 +237,4 @@ function detectMime(buffer) {
   return 'image/jpeg'; // fallback
 }
 
-module.exports = { analyzeImages, describeImage };
+module.exports = { analyzeImages, describeImage, verifyAuthenticity };

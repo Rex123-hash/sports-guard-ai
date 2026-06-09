@@ -1,9 +1,11 @@
 const { detectText, detectLabels } = require('../modules/vision');
+const { verifyAuthenticity } = require('../modules/gemini');
 
 /**
  * POST /api/verify
  * Multipart form: image (file)
- * Runs OCR to extract copyright/ownership text and detects sport labels.
+ * Cloud Vision OCR extracts copyright/ownership text + sport labels, then
+ * Gemini 2.5 Flash judges the frame's provenance/authenticity.
  */
 module.exports = async function verifyHandler(req, res, next) {
   try {
@@ -16,11 +18,21 @@ module.exports = async function verifyHandler(req, res, next) {
       detectLabels(imageBuffer),
     ]);
 
+    // Real multimodal provenance assessment. Degrade gracefully to OCR-only
+    // if the model call fails, so Verify never hard-fails.
+    let gemini = null;
+    try {
+      gemini = await verifyAuthenticity(imageBuffer, textResult.text);
+    } catch (err) {
+      console.error('[verify] Gemini authenticity failed:', err.message);
+    }
+
     return res.json({
       extractedText: textResult.text,
       hasLicenseText: textResult.hasLicenseText,
-      textAnnotations: textResult.annotations.slice(0, 10),
+      textAnnotations: textResult.annotations.slice(0, 12),
       labels: labels.slice(0, 8),
+      gemini,
     });
   } catch (err) {
     next(err);
