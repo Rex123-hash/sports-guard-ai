@@ -62,6 +62,9 @@ def _download_ytdlp(url: str) -> str:
         "noplaylist": True,
         "max_filesize": MAX_BYTES,
         "logger": _SilentLogger(),
+        # The android/ios player clients can slip past YouTube's "confirm you're
+        # not a bot" wall that blocks datacenter IPs (best-effort; not guaranteed).
+        "extractor_args": {"youtube": {"player_client": ["android", "ios", "web"]}},
     }
     with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(url, download=True)
