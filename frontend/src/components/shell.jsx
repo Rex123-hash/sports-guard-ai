@@ -7,6 +7,7 @@ export function Sidebar({ page, onNav, totals, open, onClose }) {
     { id: 'dashboard', label: 'Metrics', sc: 'D', icon: Icon.grid },
     { id: 'register', label: 'Protect Asset', sc: 'P', icon: Icon.upload },
     { id: 'check', label: 'Scan URL', sc: 'S', icon: Icon.bolt },
+    { id: 'video', label: 'Scan Video', sc: 'C', icon: Icon.scan },
     { id: 'verify', label: 'Verify Frame', sc: 'V', icon: Icon.scan },
     { id: 'guide', label: 'Help & FAQ', sc: '?', icon: Icon.info },
   ];
@@ -95,6 +96,7 @@ export function Topbar({ now, page, onNav, user, onSignOut, onMenuToggle, search
     dashboard: ['Workspace', 'Metrics'],
     register: ['Workspace', 'Protect Asset'],
     check: ['Workspace', 'Scan URL'],
+    video: ['Workspace', 'Scan Video'],
     verify: ['Workspace', 'Verify Frame'],
     guide: ['Help', 'FAQ'],
     archive: ['Archive', 'All Assets'],

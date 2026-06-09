@@ -1,0 +1,4 @@
+Pillow>=11,<13
+imageio>=2.34
+imageio-ffmpeg>=0.5
+yt-dlp>=2024.0

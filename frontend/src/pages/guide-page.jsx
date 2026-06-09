@@ -44,6 +44,10 @@ export default function Guide({ onNav }) {
               <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Check a suspicious image URL against the protected asset library, score the match, and log the result in the dashboard.</p>
             </div>
             <div className="card card-pad">
+              <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Video Scanning</h3>
+              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Paste a video URL (direct .mp4 or a YouTube/Instagram/X link). Keyframes are extracted and fingerprinted, and Gemini adjudicates any registered frame found inside — with the exact timestamp it appears.</p>
+            </div>
+            <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Gemini Verification</h3>
               <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Gemini 2.5 Flash on Vertex AI produces an explicit authenticity verdict and downloadable verification report for demos and submissions.</p>
             </div>
@@ -95,6 +99,13 @@ export default function Guide({ onNav }) {
                 Use the verification screen when recording your demo. It makes Gemini visible with a readable authenticity score and a report that names Vertex AI directly.
               </p>
               <button className="btn coral" onClick={() => onNav('verify')}>{Icon.scan} Open verification</button>
+            </div>
+            <div className="card card-pad-lg">
+              <h3 style={{ margin: '0 0 8px 0', fontSize: 18, fontFamily: 'Outfit', fontWeight: 600 }}>Scan a video for piracy</h3>
+              <p style={{ color: 'var(--ink-3)', fontSize: 14, lineHeight: 1.6, margin: '0 0 16px 0' }}>
+                Drop a clip or paste a link. SportsGuard scans every keyframe and flags any protected frame hidden inside the video, with the timestamp and a ready DMCA draft.
+              </p>
+              <button className="btn coral" onClick={() => onNav('video')}>{Icon.scan} Open video scan</button>
             </div>
           </div>
         </section>

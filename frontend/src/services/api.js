@@ -44,6 +44,19 @@ export const SG_API = {
     return res.json();
   },
 
+  async checkVideo(url) {
+    const res = await fetch(`${BASE}/api/check-video`, {
+      method: 'POST',
+      headers: await authHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ url }),
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || 'Video check failed');
+    }
+    return res.json();
+  },
+
   async verify(file) {
     const form = new FormData();
     form.append('image', file);

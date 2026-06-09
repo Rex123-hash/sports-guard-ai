@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 
 const registerRoute = require('./routes/register');
 const checkRoute = require('./routes/check');
+const checkVideoRoute = require('./routes/checkVideo');
 const verifyRoute = require('./routes/verify');
 const detectionsRoute = require('./routes/detections');
 const assetsRoute = require('./routes/assets');
@@ -53,6 +54,7 @@ app.get('/health', (req, res) => {
 // (Google sign-in or anonymous guest). Read-only dashboard routes stay public.
 app.post('/api/register', requireAuth, upload.single('image'), registerRoute);
 app.post('/api/check', requireAuth, checkRoute);
+app.post('/api/check-video', requireAuth, checkVideoRoute);
 app.post('/api/verify', requireAuth, upload.single('image'), verifyRoute);
 app.get('/api/detections', detectionsRoute);
 app.get('/api/assets', assetsRoute);

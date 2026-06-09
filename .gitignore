@@ -27,6 +27,14 @@ Thumbs.db
 .claude/
 frontend/.claude/
 
+# Python (embedded video pipeline)
+**/__pycache__/
+*.pyc
+**/.venv/
+
+# Local video prototype scratch (canonical code lives in backend/video/)
+video-pipeline/
+
 # Local-only working folders
 Thumbnail pics/
 frontend/backup-pre-vite-module-migration/

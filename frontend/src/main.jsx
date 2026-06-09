@@ -12,6 +12,7 @@ import Dashboard from './pages/dashboard-page.jsx';
 import Guide from './pages/guide-page.jsx';
 import Register from './pages/register-page.jsx';
 import CheckURL from './pages/check-page.jsx';
+import VideoCheck from './pages/video-check-page.jsx';
 import Verify from './pages/verify-page.jsx';
 import { Archive, DetectionLog, Drawer } from './pages/archive-page.jsx';
 
@@ -78,6 +79,9 @@ function App({ user }) {
           break;
         case 'KeyS':
           nextPage = 'check';
+          break;
+        case 'KeyC':
+          nextPage = 'video';
           break;
         case 'KeyV':
           nextPage = 'verify';
@@ -150,6 +154,7 @@ function App({ user }) {
           });
         }}/>}
         {page === 'check'      && <CheckURL assets={assets} onDetection={handleDetection}/>}
+        {page === 'video'      && <VideoCheck assets={assets} onDetection={handleDetection}/>}
         {page === 'verify'     && <Verify/>}
         {page === 'archive'    && <Archive assets={assets} search={search} onNav={setPage}/>}
         {page === 'detections' && <DetectionLog detections={detections} assets={assets} search={search} onOpen={setDrawerDet}/>}
