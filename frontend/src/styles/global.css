@@ -312,7 +312,9 @@ body {
   padding: 36px 36px 60px 36px;
   max-width: 1500px;
   width: 100%;
-  animation: pageIn 0.5s cubic-bezier(0.2, 0.7, 0.1, 1) forwards;
+  /* No page-level entrance animation: the inner .fade-up elements handle the
+     reveal. Animating both made every element move twice on each page switch
+     (read as a "double refresh"). */
 }
 @keyframes pageIn {
   from { opacity: 0.001; transform: translateY(8px); }
