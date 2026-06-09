@@ -44,14 +44,27 @@ def main():
             print(json.dumps({"error": "no frames could be extracted"}))
             sys.exit(1)
 
-        thumb_img = kept[len(kept) // 2][1]  # middle frame is usually representative
-        buf = io.BytesIO()
-        thumb_img.convert("RGB").save(buf, "JPEG", quality=85)
+        # Cap the kept set so storage/uploads stay bounded (evenly sampled).
+        MAX_KEEP = 30
+        if len(kept) > MAX_KEEP:
+            step = len(kept) / MAX_KEEP
+            kept = [kept[int(i * step)] for i in range(MAX_KEEP)]
+
+        # Return each kept keyframe's image (downscaled for storage; the hash was
+        # already computed from the full frame) so the matched frame can later be
+        # shown and sent to Gemini.
+        out_frames = []
+        for h, img in kept:
+            im = img.convert("RGB")
+            im.thumbnail((480, 480))
+            b = io.BytesIO()
+            im.save(b, "JPEG", quality=82)
+            out_frames.append({"hash": h, "b64": base64.b64encode(b.getvalue()).decode("ascii")})
 
         print(json.dumps({
-            "frameCount": len(kept),
-            "frameHashes": [h for h, _ in kept],
-            "thumbB64": base64.b64encode(buf.getvalue()).decode("ascii"),
+            "frameCount": len(out_frames),
+            "frames": out_frames,
+            "thumbIndex": len(out_frames) // 2,
         }))
     except Exception as e:
         print(json.dumps({"error": f"{type(e).__name__}: {e}"}))

@@ -61,6 +61,7 @@ export default function VideoCheck({ assets, onDetection }) {
         type: r.type || (isClean ? 'clean' : 'review'),
         geminiVerdict: r.geminiVerdict || 'NO_MATCH',
         asset: r.matchedAsset || null,
+        matchedFrameUrl: r.matchedFrameUrl || null,
         matchedFrame: r.matchedFrame || null,
         timestamp: r.timestampSeconds,
         framesScanned: r.framesScanned,
@@ -178,8 +179,8 @@ export default function VideoCheck({ assets, onDetection }) {
           <div className="grid grid-2 gap-3">
             <div className="frame">
               <div className="frame-img">
-                {verdict?.asset?.imageUrl
-                  ? <img src={verdict.asset.imageUrl} alt="registered original" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                {(verdict?.matchedFrameUrl || verdict?.asset?.imageUrl)
+                  ? <img src={verdict.matchedFrameUrl || verdict.asset.imageUrl} alt="registered matched frame" style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
                   : <Placeholder tone="pine" label="REGISTERED" frame="ORIGINAL"/>}
                 <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>
               </div>

@@ -51,13 +51,15 @@ module.exports = async function checkHandler(req, res, next) {
       return res.json({ piracyDetected: false, reason: 'No registered assets in database' });
     }
 
-    let bestAsset = null, bestSim = 0;
+    let bestAsset = null, bestSim = 0, bestFrameUrl = null;
     for (const a of assets) {
-      // Image asset: one hash. Video asset: one hash per registered keyframe.
-      const hashes = (a.frameHashes && a.frameHashes.length) ? a.frameHashes : (a.phash ? [a.phash] : []);
-      for (const h of hashes) {
-        const s = similarity(h, suspectedHash);
-        if (s > bestSim) { bestSim = s; bestAsset = a; }
+      // Image asset: one frame. Video asset: one {hash, imageUrl} per keyframe.
+      const cands = (a.frames && a.frames.length)
+        ? a.frames
+        : (a.phash ? [{ hash: a.phash, imageUrl: a.imageUrl }] : []);
+      for (const f of cands) {
+        const s = similarity(f.hash, suspectedHash);
+        if (s > bestSim) { bestSim = s; bestAsset = a; bestFrameUrl = f.imageUrl; }
       }
     }
 
@@ -75,12 +77,12 @@ module.exports = async function checkHandler(req, res, next) {
     // 5. Fetch original for Gemini
     let originalBuf;
     try {
-      const r = await axios.get(bestAsset.imageUrl, { responseType: 'arraybuffer', timeout: 10000 });
+      const r = await axios.get(bestFrameUrl || bestAsset.imageUrl, { responseType: 'arraybuffer', timeout: 10000 });
       originalBuf = Buffer.from(r.data);
     } catch {
       const confidence = Math.round(bestSim * 0.4);
       const type = confidence >= PIRACY_THRESHOLD ? 'piracy' : confidence >= 70 ? 'review' : 'clean';
-      return res.json({ piracyDetected: confidence >= PIRACY_THRESHOLD, confidence, phashSim: bestSim, geminiVerdict: 'HASH_ONLY', type, mod: '—', matchedAsset: _safeAsset(bestAsset) });
+      return res.json({ piracyDetected: confidence >= PIRACY_THRESHOLD, confidence, phashSim: bestSim, geminiVerdict: 'HASH_ONLY', type, mod: '—', matchedAsset: _safeAsset({ ...bestAsset, imageUrl: bestFrameUrl || bestAsset.imageUrl }) });
     }
 
     // 6. Gemini analysis
@@ -111,7 +113,7 @@ module.exports = async function checkHandler(req, res, next) {
       reasoning: gemini.reasoning,
       evidence:  gemini.evidence,
       transformations: gemini.transformations,
-      matchedAsset: _safeAsset(bestAsset),
+      matchedAsset: _safeAsset({ ...bestAsset, imageUrl: bestFrameUrl || bestAsset.imageUrl }),
       detectionId,
     });
   } catch (err) {

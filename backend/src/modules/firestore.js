@@ -21,11 +21,12 @@ async function saveAsset(data) {
     type:       data.type || 'image',
     phash:      data.phash,
     frameHashes: data.frameHashes || null,   // video assets: one hash per keyframe
+    frames:     data.frames || null,         // video assets: [{hash, imageUrl}] per keyframe
     frameCount: data.frameCount || null,
     description: data.description || '',
     notes:      data.notes || '',
     imageUrl:   data.imageUrl,
-    storagePath: data.storagePath,
+    storagePath: data.storagePath || null,
     frame:      data.frame || 'F-00:00:00',
     status:     'active',
     registered: new Date().toISOString(),

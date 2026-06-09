@@ -198,7 +198,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
                     <div className="serif" style={{ fontSize: 26, lineHeight: 1.1, marginTop: 6, fontWeight: 400 }}>{mode === 'video' ? 'Your clip is now under watch.' : 'Your frame is now under watch.'}</div>
                     <div className="mono mt-2" style={{ fontSize: 11, opacity: 0.85 }}>Continuously matched against any URL submitted to SportsGuard</div>
                   </div>
-                  <button className="btn" style={{ background: '#fff', color: 'var(--moss)', borderColor: '#fff' }} onClick={() => onNav && onNav('check')}>
+                  <button className="btn" style={{ background: '#fff', color: 'var(--moss)', borderColor: '#fff' }} onClick={() => onNav && onNav(mode === 'video' ? 'video' : 'check')}>
                     Run check {Icon.arrow}
                   </button>
                 </div>

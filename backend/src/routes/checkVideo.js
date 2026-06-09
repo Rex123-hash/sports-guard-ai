@@ -29,7 +29,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
     }
 
     const assets = await getAllAssets();
-    const slim = assets.filter(a => a.imageUrl).map(a => ({ id: a.id, title: a.title, imageUrl: a.imageUrl, frameHashes: a.frameHashes || null }));
+    const slim = assets.filter(a => a.imageUrl).map(a => ({ id: a.id, title: a.title, imageUrl: a.imageUrl, frameHashes: a.frameHashes || null, frames: a.frames || null }));
 
     let det;
     try {
@@ -49,10 +49,12 @@ module.exports = async function checkVideoHandler(req, res, next) {
     const frameBuf = Buffer.from(det.frameB64, 'base64');
     const matchedFrame = `data:image/jpeg;base64,${det.frameB64}`; // the actual frame found in the video
 
-    // Stage 2: Gemini on the matched frame (reuse the proven /check path).
+    // Stage 2: Gemini comparing the SUSPECT frame against the exact registered
+    // frame that matched (not the thumbnail) — reuse the proven /check path.
+    const registeredFrameUrl = det.matchedFrameUrl || det.imageUrl;
     let gemini = null;
     try {
-      const r = await axios.get(det.imageUrl, { responseType: 'arraybuffer', timeout: 10000 });
+      const r = await axios.get(registeredFrameUrl, { responseType: 'arraybuffer', timeout: 10000 });
       gemini = await analyzeImages(Buffer.from(r.data), frameBuf);
     } catch (e) {
       console.error('[check-video] Gemini step unavailable:', e.message);
@@ -64,7 +66,8 @@ module.exports = async function checkVideoHandler(req, res, next) {
       return res.json({
         ...base, piracyDetected: false, confidence, phashSim: det.similarity,
         geminiVerdict: 'HASH_ONLY', type: 'review', timestampSeconds: det.timestampSeconds,
-        matchedAsset: _safe(matchedAsset), matchedFrame, note: 'Gemini adjudication pending in this environment',
+        matchedAsset: _safe(matchedAsset), matchedFrame, matchedFrameUrl: registeredFrameUrl,
+        note: 'Gemini adjudication pending in this environment',
       });
     }
 
@@ -89,7 +92,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
       geminiVerdict: gemini.verdict, type,
       mod: gemini.transformations.join(' + ') || '—',
       reasoning: gemini.reasoning, evidence: gemini.evidence, transformations: gemini.transformations,
-      timestampSeconds: det.timestampSeconds, matchedFrame,
+      timestampSeconds: det.timestampSeconds, matchedFrame, matchedFrameUrl: registeredFrameUrl,
       matchedAsset: _safe(matchedAsset), detectionId,
     });
   } catch (err) {
