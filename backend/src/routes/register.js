@@ -12,7 +12,7 @@ module.exports = async function registerHandler(req, res, next) {
   try {
     if (!req.file) return res.status(400).json({ error: 'image file is required' });
 
-    const { owner, title, sport, license, frame } = req.body;
+    const { owner, title, sport, license, frame, notes } = req.body;
     if (!owner || !title || !sport || !license) {
       return res.status(400).json({ error: 'owner, title, sport, and license are required' });
     }
@@ -32,6 +32,7 @@ module.exports = async function registerHandler(req, res, next) {
     const assetId = await saveAsset({
       owner, title, sport, license,
       frame: frame || 'F-00:00:00',
+      notes: notes || '',
       phash, description, imageUrl, storagePath,
     });
 

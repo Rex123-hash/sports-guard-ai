@@ -107,10 +107,10 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
           return (
             <div key={d.id} className="det-row" onClick={() => onOpen(d)}>
               <span className="mono" style={{ fontSize: 11, color: 'var(--ink-3)' }}>{d.detected}</span>
-              <div className="det-thumb"><Placeholder tone={tone} label={asset?.sport.toUpperCase().slice(0, 3)} frame={asset?.frame}/></div>
+              <div className="det-thumb"><Placeholder tone={tone} label={(asset?.sport || d.sport || '').toUpperCase().slice(0, 3)} frame={asset?.frame || d.frame}/></div>
               <div>
                 <div style={{ fontWeight: 500, fontSize: 13.5 }}>{d.url}</div>
-                <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title} · mod: {d.mod}</div>
+                <div className="mono" style={{ fontSize: 10.5, color: 'var(--ink-mute)', marginTop: 3 }}>{asset?.title || d.title || '—'} · mod: {d.mod}</div>
               </div>
               <ConfBar value={d.phashSim}/>
               <ConfBar value={d.confidence}/>
@@ -129,7 +129,7 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
   );
 }
 
-export function Drawer({ detection, assets, onClose }) {
+export function Drawer({ detection, assets, onClose, onReview }) {
   if (!detection) return null;
   const asset = assets.find(a => a.id === detection.assetId);
   const report = buildEvidenceReport(detection, asset);
@@ -212,7 +212,7 @@ export function Drawer({ detection, assets, onClose }) {
                 <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
                   <button className="btn coral lg" onClick={() => copyTextToClipboard(dmcaNotice)}>{Icon.copy}Issue takedown</button>
                   <button className="btn lg" onClick={exportDmca}>{Icon.doc}Download notice</button>
-                  <button className="btn ghost lg" style={{ border: '1px solid var(--line)' }}>Mark reviewed</button>
+                  <button className="btn ghost lg" style={{ border: '1px solid var(--line)' }} disabled={detection.reviewed} onClick={() => onReview && onReview(detection)}>{detection.reviewed ? `${Icon.check} Reviewed` : 'Mark reviewed'}</button>
                 </div>
               </div>
             </div>
@@ -221,7 +221,7 @@ export function Drawer({ detection, assets, onClose }) {
           {detection.type !== 'piracy' && (
             <div style={{ display: 'flex', gap: 8, marginTop: 24, flexWrap: 'wrap' }}>
               <button className="btn lg" onClick={exportEvidence}>{Icon.doc}Export evidence</button>
-              <button className="btn ghost lg" style={{ border: '1px solid var(--line)' }}>Mark reviewed</button>
+              <button className="btn ghost lg" style={{ border: '1px solid var(--line)' }} disabled={detection.reviewed} onClick={() => onReview && onReview(detection)}>{detection.reviewed ? 'Reviewed ✓' : 'Mark reviewed'}</button>
             </div>
           )}
         </div>

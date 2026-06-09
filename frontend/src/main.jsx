@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { SG_API } from './services/api.js';
@@ -26,6 +26,7 @@ function App({ user }) {
   const [stats, setStats] = useState({ totalAssets: 0, totalDetections: 0 });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const reviewedRef = useRef(new Set()); // detection ids marked reviewed this session
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 1000);
@@ -41,7 +42,7 @@ function App({ user }) {
         ]);
 
         setAssets(Array.isArray(assetsData.assets) ? assetsData.assets : []);
-        setDetections(detectionsData.detections || []);
+        setDetections((detectionsData.detections || []).map(d => reviewedRef.current.has(d.id) ? { ...d, reviewed: true } : d));
         if (detectionsData.stats) setStats(detectionsData.stats);
       } catch (err) {
         console.error('Failed to fetch operations data:', err);
@@ -124,6 +125,12 @@ function App({ user }) {
     if (value && (page === 'landing' || page === 'guide')) setPage('detections');
   }
 
+  function handleReview(det) {
+    if (det?.id) reviewedRef.current.add(det.id);
+    setDetections(prev => prev.map(x => (x.id === det.id ? { ...x, reviewed: true } : x)));
+    setDrawerDet(null);
+  }
+
   return (
     <div className="app">
       <Sidebar page={page} onNav={setPage} totals={stats} open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
@@ -146,7 +153,7 @@ function App({ user }) {
         {page === 'verify'     && <Verify/>}
         {page === 'archive'    && <Archive assets={assets} search={search} onNav={setPage}/>}
         {page === 'detections' && <DetectionLog detections={detections} assets={assets} search={search} onOpen={setDrawerDet}/>}
-        <Drawer detection={drawerDet} assets={assets} onClose={() => setDrawerDet(null)}/>
+        <Drawer detection={drawerDet} assets={assets} onClose={() => setDrawerDet(null)} onReview={handleReview}/>
       </main>
     </div>
   );

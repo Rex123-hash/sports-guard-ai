@@ -72,20 +72,6 @@ export function Sidebar({ page, onNav, totals, open, onClose }) {
               <Counter to={Number(totals?.totalDetections ?? totals?.detections ?? 0)} duration={1400} />
             </div>
             <div style={{ fontSize: 11, opacity: 0.85, marginTop: 4 }}>detections processed</div>
-            <div
-              style={{
-                display: 'flex',
-                gap: 6,
-                marginTop: 12,
-                fontSize: 10,
-                fontFamily: 'JetBrains Mono, monospace',
-                letterSpacing: '0.06em',
-                color: 'var(--butter)',
-                opacity: 0.85,
-              }}
-            >
-              <span>↑ 12% vs avg</span>
-            </div>
             <div style={{ marginTop: 16, marginLeft: -16, marginRight: -16, marginBottom: -16 }}>
               <Sparkline w={200} h={40} color="var(--moss)" values={[3, 5, 4, 7, 6, 9, 8, 11, 10, 14, 13, 18]} />
             </div>

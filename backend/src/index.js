@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
+const rateLimit = require('express-rate-limit');
 
 const registerRoute = require('./routes/register');
 const checkRoute = require('./routes/check');
@@ -13,11 +14,24 @@ const { requireAuth } = require('./modules/auth');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+// Trust the Cloud Run proxy so rate limiting sees the real client IP.
+app.set('trust proxy', 1);
+
 app.use(cors({
   origin: process.env.ALLOWED_ORIGIN || '*',
   methods: ['GET', 'POST'],
 }));
 app.use(express.json());
+
+// Basic abuse protection: cap requests per IP on the API surface.
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 40,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests — please slow down and try again shortly.' },
+});
+app.use('/api', apiLimiter);
 
 // In-memory storage for uploaded files (multer)
 const upload = multer({

@@ -22,6 +22,7 @@ export const SG_API = {
     form.append('title', meta.title);
     form.append('sport', meta.sport);
     form.append('license', meta.license);
+    form.append('notes', meta.notes || '');
     const res = await fetch(`${BASE}/api/register`, { method: 'POST', headers: await authHeaders(), body: form });
     if (!res.ok) {
       const e = await res.json().catch(() => ({}));

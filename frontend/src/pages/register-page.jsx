@@ -16,13 +16,21 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
     notes: 'Mid-pitch celebration · 47th over · MCG broadcast feed',
   });
   const [file, setFile] = useState(null);
+  const [imgUrl, setImgUrl] = useState(null);
 
+  function pickFile(f) {
+    if (!f) return;
+    if (imgUrl) URL.revokeObjectURL(imgUrl);
+    setFile(f);
+    setImgUrl(URL.createObjectURL(f));
+    setStep('metadata');
+  }
   function handleDrop(e) {
     e.preventDefault(); setDrag(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) { setFile(e.dataTransfer.files[0]); setStep('metadata'); }
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) pickFile(e.dataTransfer.files[0]);
   }
   function handleFileChange(e) {
-    if (e.target.files && e.target.files[0]) { setFile(e.target.files[0]); setStep('metadata'); }
+    if (e.target.files && e.target.files[0]) pickFile(e.target.files[0]);
   }
 
   async function commit() {
@@ -39,7 +47,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
       setStep('metadata');
     }
   }
-  function reset() { setStep('idle'); setHash(''); setFile(null); setProgress(0); }
+  function reset() { if (imgUrl) URL.revokeObjectURL(imgUrl); setStep('idle'); setHash(''); setFile(null); setImgUrl(null); setProgress(0); }
 
   return (
     <div className="page">
@@ -79,7 +87,9 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
           {step !== 'idle' && (
             <div className="frame">
               <div className="frame-img" style={{ aspectRatio: '4/3', position: 'relative' }}>
-                <Placeholder tone="pine" label="CRICKET" frame="F-04:23:11" live={step !== 'done'}/>
+                {imgUrl
+                  ? <img src={imgUrl} alt="frame to register" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  : <Placeholder tone="pine" label="FRAME" frame="—" live={step !== 'done'}/>}
                 {step === 'done' && <span className="frame-tag tag solid-moss">{Icon.check} REGISTERED</span>}
                 {step === 'uploading' && (
                   <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 4, background: 'rgba(0,0,0,0.25)', zIndex: 5 }}>
@@ -130,20 +140,14 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
                 <label className="field-label">Title · descriptive</label>
                 <input className="input" value={meta.title} onChange={e => setMeta({ ...meta, title: e.target.value })}/>
               </div>
-              <div className="grid grid-2 gap-4">
-                <div className="field">
-                  <label className="field-label">License</label>
-                  <select className="select" value={meta.license} onChange={e => setMeta({ ...meta, license: e.target.value })}>
-                    <option value="broadcast-only">Broadcast only</option>
-                    <option value="press-pool">Press pool</option>
-                    <option value="editorial">Editorial</option>
-                    <option value="archival">Archival</option>
-                  </select>
-                </div>
-                <div className="field">
-                  <label className="field-label">Capture timestamp</label>
-                  <input className="input mono" defaultValue="2026-04-25 19:42:03"/>
-                </div>
+              <div className="field">
+                <label className="field-label">License</label>
+                <select className="select" value={meta.license} onChange={e => setMeta({ ...meta, license: e.target.value })}>
+                  <option value="broadcast-only">Broadcast only</option>
+                  <option value="press-pool">Press pool</option>
+                  <option value="editorial">Editorial</option>
+                  <option value="archival">Archival</option>
+                </select>
               </div>
               <div className="field">
                 <label className="field-label">Notes</label>

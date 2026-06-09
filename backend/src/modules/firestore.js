@@ -20,6 +20,7 @@ async function saveAsset(data) {
     license:    data.license,
     phash:      data.phash,
     description: data.description || '',
+    notes:      data.notes || '',
     imageUrl:   data.imageUrl,
     storagePath: data.storagePath,
     frame:      data.frame || 'F-00:00:00',
