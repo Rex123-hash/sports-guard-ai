@@ -1,4 +1,6 @@
 require('dotenv').config();
+const os = require('node:os');
+const path = require('node:path');
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
@@ -46,6 +48,26 @@ const upload = multer({
   },
 });
 
+// Video uploads go to a temp file on disk (videos are large); the Python
+// pipeline reads the path, and the route deletes it afterwards.
+const videoUpload = multer({
+  storage: multer.diskStorage({
+    destination: os.tmpdir(),
+    // Keep a real extension so the decoder can detect the format.
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname || '') || '.mp4';
+      cb(null, `sgvid_${Date.now()}_${Math.round(Math.random() * 1e9)}${ext}`);
+    },
+  }),
+  limits: { fileSize: 80 * 1024 * 1024 }, // 80MB
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('video/')) {
+      return cb(new Error('Only video files are allowed'));
+    }
+    cb(null, true);
+  },
+});
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', service: 'sportsguard-api', timestamp: new Date().toISOString() });
 });
@@ -54,7 +76,7 @@ app.get('/health', (req, res) => {
 // (Google sign-in or anonymous guest). Read-only dashboard routes stay public.
 app.post('/api/register', requireAuth, upload.single('image'), registerRoute);
 app.post('/api/check', requireAuth, checkRoute);
-app.post('/api/check-video', requireAuth, checkVideoRoute);
+app.post('/api/check-video', requireAuth, videoUpload.single('video'), checkVideoRoute);
 app.post('/api/verify', requireAuth, upload.single('image'), verifyRoute);
 app.get('/api/detections', detectionsRoute);
 app.get('/api/assets', assetsRoute);

@@ -36,9 +36,8 @@ export default function VideoCheck({ assets, onDetection }) {
     { url: 'https://download.samplelib.com/mp4/sample-5s.mp4', label: 'Sample mp4 · clean' },
   ];
 
-  async function run(u) {
-    const target = u || url;
-    setUrl(target); setPhase('running'); setVerdict(null);
+  async function execute(apiCall, displaySource) {
+    setUrl(displaySource); setPhase('running'); setVerdict(null);
     setStepStatus(STEPS.map(() => 'queued'));
 
     let i = 0;
@@ -49,14 +48,14 @@ export default function VideoCheck({ assets, onDetection }) {
     }, 800);
 
     try {
-      const r = await SG_API.checkVideo(target);
+      const r = await apiCall();
       clearInterval(interval);
       setStepStatus(STEPS.map(() => 'done'));
 
       const conf = r.confidence || 0;
-      const isClean = !r.matched && r.type === 'clean' || r.geminiVerdict === 'NO_MATCH';
+      const isClean = (!r.matched && r.type === 'clean') || r.geminiVerdict === 'NO_MATCH';
       const v = {
-        url: target,
+        url: displaySource,
         confidence: conf,
         phashSim: r.phashSim || 0,
         type: r.type || (isClean ? 'clean' : 'review'),
@@ -77,12 +76,30 @@ export default function VideoCheck({ assets, onDetection }) {
       clearInterval(interval);
       console.error(err);
       const m = err.message || '';
-      const friendly = /youtube|download|proxy|not available|unavailable|geo|blocked/i.test(m)
-        ? "Couldn't download that video. Platform links (YouTube/Instagram/X) can be region-locked or blocked. Try a direct .mp4 link or the sample clip."
-        : m;
+      let friendly = m;
+      if (/moov|invalid data|could not extract|extract frames|no frames/i.test(m)) {
+        friendly = "This video couldn't be read. It may be incomplete, still downloading, larger than the 80 MB limit, or in an unsupported format. Re-save it as a standard MP4 (H.264) or try a different clip.";
+      } else if (/youtube|download|proxy|not available|unavailable|geo|blocked/i.test(m)) {
+        friendly = "Couldn't download that video. Platform links (YouTube/Instagram/X) can be region-locked or blocked. Try a direct .mp4 link, upload the file, or the sample clip.";
+      }
       alert('Video check failed: ' + friendly);
       setPhase('idle');
     }
+  }
+
+  function run(u) {
+    const target = u || url;
+    execute(() => SG_API.checkVideo(target), target);
+  }
+
+  function runFile(file) {
+    execute(() => SG_API.checkVideoUpload(file), `upload: ${file.name}`);
+  }
+
+  function handleFileChange(e) {
+    const f = e.target.files && e.target.files[0];
+    if (f) runFile(f);
+    e.target.value = ''; // allow re-selecting the same file
   }
 
   function reset() { setPhase('idle'); setVerdict(null); setStepStatus([]); }
@@ -114,7 +131,13 @@ export default function VideoCheck({ assets, onDetection }) {
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>VIDEO URL</span>
           <input className="input mono" value={url} onChange={e => setUrl(e.target.value)} disabled={phase === 'running'}
             style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 14, padding: '12px 8px', outline: 'none', boxShadow: 'none' }}/>
-          {phase === 'idle' && <button className="btn coral lg" onClick={() => run()}>{Icon.bolt}Scan video</button>}
+          {phase === 'idle' && (
+            <>
+              <input type="file" id="videoUpload" accept="video/*" style={{ display: 'none' }} onChange={handleFileChange}/>
+              <button className="btn" onClick={() => document.getElementById('videoUpload').click()}>{Icon.upload}Upload</button>
+              <button className="btn coral lg" onClick={() => run()}>{Icon.bolt}Scan video</button>
+            </>
+          )}
           {phase === 'running' && <button className="btn lg" disabled><span className="pipe-spinner"/>Scanning…</button>}
           {phase === 'done' && <button className="btn lg" onClick={reset}>↻ New scan</button>}
         </div>

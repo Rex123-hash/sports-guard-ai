@@ -57,6 +57,17 @@ export const SG_API = {
     return res.json();
   },
 
+  async checkVideoUpload(file) {
+    const form = new FormData();
+    form.append('video', file);
+    const res = await fetch(`${BASE}/api/check-video`, { method: 'POST', headers: await authHeaders(), body: form });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({}));
+      throw new Error(e.error || 'Video upload check failed');
+    }
+    return res.json();
+  },
+
   async verify(file) {
     const form = new FormData();
     form.append('image', file);

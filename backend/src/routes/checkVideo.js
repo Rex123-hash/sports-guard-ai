@@ -1,4 +1,5 @@
 const axios = require('axios');
+const fs = require('node:fs');
 const { getAllAssets, saveDetection } = require('../modules/firestore');
 const { runVideoDetection } = require('../modules/videoDetect');
 const { analyzeImages } = require('../modules/gemini');
@@ -8,19 +9,22 @@ const PIRACY_THRESHOLD = 85;
 
 /**
  * POST /api/check-video
- * Body: { url }  (direct video URL, platform URL, or — locally — a file path)
+ * Accepts EITHER an uploaded video file (multipart field "video") OR { url }
+ * (direct video URL, platform URL, or — locally — a file path).
  * Python extracts keyframes + hashes + matches; Node runs Gemini on the best frame.
  */
 module.exports = async function checkVideoHandler(req, res, next) {
   try {
-    const { url } = req.body;
-    if (!url || typeof url !== 'string') {
-      return res.status(400).json({ error: 'url is required' });
+    // An uploaded file takes precedence over a URL.
+    const source = req.file ? req.file.path : (typeof req.body.url === 'string' ? req.body.url : '');
+    const sourceLabel = req.file ? `upload: ${req.file.originalname || 'video'}` : source;
+    if (!source) {
+      return res.status(400).json({ error: 'Provide a video file (upload) or a url' });
     }
 
-    // SSRF-guard real URLs (skip for local file paths used in dev testing).
-    if (/^https?:\/\//i.test(url)) {
-      try { await assertSafePublicUrl(url); }
+    // SSRF-guard real URLs (uploaded file paths skip this).
+    if (/^https?:\/\//i.test(source)) {
+      try { await assertSafePublicUrl(source); }
       catch (e) { return res.status(400).json({ error: e.message }); }
     }
 
@@ -29,7 +33,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
 
     let det;
     try {
-      det = await runVideoDetection(url, slim);
+      det = await runVideoDetection(source, slim);
     } catch (e) {
       return res.status(400).json({ error: `Video detection failed: ${e.message}` });
     }
@@ -71,7 +75,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
     let detectionId = null;
     if (piracyDetected || type === 'review') {
       detectionId = await saveDetection({
-        assetId: det.assetId, suspiciousUrl: url,
+        assetId: det.assetId, suspiciousUrl: sourceLabel,
         phashSimilarity: det.similarity,
         geminiVerdict: gemini.verdict, geminiConfidence: gemini.confidence,
         finalConfidence: confidence,
@@ -90,6 +94,9 @@ module.exports = async function checkVideoHandler(req, res, next) {
     });
   } catch (err) {
     next(err);
+  } finally {
+    // Always remove the uploaded temp file.
+    if (req.file && req.file.path) fs.unlink(req.file.path, () => {});
   }
 };
 
