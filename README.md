@@ -131,8 +131,8 @@ The Metrics page now reflects live Firestore-backed assets and detections instea
                        ▼
 ┌──────────────────────────────────────────────────────────────────┐
 │                  Backend API · Cloud Run (Node.js)               │
-│  /register · /register-video · /check · /check-video · /verify  │
-│  /detections · /assets        + embedded Python video pipeline  │
+│  /register · /register-video · /check · /check-video · /verify   │
+│  /detections · /assets        + embedded Python video pipeline   │
 └──┬─────────────┬─────────────┬──────────────┬───────────────┬────┘
    │             │             │              │               │
    ▼             ▼             ▼              ▼               ▼
