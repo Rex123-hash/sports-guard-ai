@@ -1,5 +1,4 @@
 const { Firestore, FieldValue } = require('@google-cloud/firestore');
-const { classify } = require('./scoring');
 
 const db = new Firestore({ projectId: process.env.GCP_PROJECT_ID });
 
@@ -46,7 +45,9 @@ async function getAllAssets() {
 
 async function saveDetection(data) {
   const ref = db.collection(DETECTIONS).doc();
-  const type = classify(data.finalConfidence);
+  const type = data.finalConfidence >= 85 ? 'piracy'
+             : data.finalConfidence >= 70 ? 'review'
+             : 'clean';
 
   const mod = Array.isArray(data.transformations) && data.transformations.length > 0
     ? data.transformations.join(' + ')

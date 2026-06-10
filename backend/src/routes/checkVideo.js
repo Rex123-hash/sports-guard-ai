@@ -4,7 +4,8 @@ const { getAllAssets, saveDetection } = require('../modules/firestore');
 const { runVideoDetection } = require('../modules/videoDetect');
 const { analyzeImages } = require('../modules/gemini');
 const { assertSafePublicUrl } = require('../modules/urlSafety');
-const { finalConfidence, classify } = require('../modules/scoring');
+
+const PIRACY_THRESHOLD = 85;
 
 /**
  * POST /api/check-video
@@ -61,7 +62,7 @@ module.exports = async function checkVideoHandler(req, res, next) {
 
     if (!gemini) {
       // Graceful fallback (e.g. local dev without Vertex access): hash-only.
-      const confidence = finalConfidence(det.similarity, 0);
+      const confidence = Math.round(det.similarity * 0.4);
       return res.json({
         ...base, piracyDetected: false, confidence, phashSim: det.similarity,
         geminiVerdict: 'HASH_ONLY', type: 'review', timestampSeconds: det.timestampSeconds,
@@ -70,8 +71,8 @@ module.exports = async function checkVideoHandler(req, res, next) {
       });
     }
 
-    const confidence = finalConfidence(det.similarity, gemini.confidence);
-    const type = classify(confidence);
+    const confidence = Math.round(det.similarity * 0.4 + gemini.confidence * 0.6);
+    const type = confidence >= PIRACY_THRESHOLD ? 'piracy' : confidence >= 70 ? 'review' : 'clean';
     const piracyDetected = type === 'piracy';
 
     let detectionId = null;
