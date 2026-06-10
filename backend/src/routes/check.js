@@ -2,10 +2,10 @@ const axios = require('axios');
 const { generateHash, similarity } = require('../modules/phash');
 const { analyzeImages } = require('../modules/gemini');
 const { getAllAssets, saveDetection } = require('../modules/firestore');
-const { assertSafePublicUrl } = require('../modules/urlSafety');
+const { assertSafePublicUrl, safeDownload } = require('../modules/urlSafety');
+const { finalConfidence, classify } = require('../modules/scoring');
 
-const PHASH_THRESHOLD  = 80;
-const PIRACY_THRESHOLD = 85;
+const PHASH_THRESHOLD = 80;
 
 /**
  * POST /api/check
@@ -26,11 +26,11 @@ module.exports = async function checkHandler(req, res, next) {
       return res.status(400).json({ error: err.message });
     }
 
-    // 1. Download suspected image
+    // 1. Download suspected image (redirect hops re-validated against SSRF)
     let suspectedBuf;
     try {
-      const r = await axios.get(url, {
-        responseType: 'arraybuffer', timeout: 10000,
+      const r = await safeDownload(url, {
+        timeout: 10000,
         maxContentLength: 10 * 1024 * 1024,
         headers: { 'User-Agent': 'SportsGuard-AI/1.0' },
       });
@@ -80,15 +80,15 @@ module.exports = async function checkHandler(req, res, next) {
       const r = await axios.get(bestFrameUrl || bestAsset.imageUrl, { responseType: 'arraybuffer', timeout: 10000 });
       originalBuf = Buffer.from(r.data);
     } catch {
-      const confidence = Math.round(bestSim * 0.4);
-      const type = confidence >= PIRACY_THRESHOLD ? 'piracy' : confidence >= 70 ? 'review' : 'clean';
-      return res.json({ piracyDetected: confidence >= PIRACY_THRESHOLD, confidence, phashSim: bestSim, geminiVerdict: 'HASH_ONLY', type, mod: '—', matchedAsset: _safeAsset({ ...bestAsset, imageUrl: bestFrameUrl || bestAsset.imageUrl }) });
+      const confidence = finalConfidence(bestSim, 0);
+      const type = classify(confidence);
+      return res.json({ piracyDetected: type === 'piracy', confidence, phashSim: bestSim, geminiVerdict: 'HASH_ONLY', type, mod: '—', matchedAsset: _safeAsset({ ...bestAsset, imageUrl: bestFrameUrl || bestAsset.imageUrl }) });
     }
 
     // 6. Gemini analysis
     const gemini = await analyzeImages(originalBuf, suspectedBuf);
-    const confidence = Math.round(bestSim * 0.4 + gemini.confidence * 0.6);
-    const type = confidence >= PIRACY_THRESHOLD ? 'piracy' : confidence >= 70 ? 'review' : 'clean';
+    const confidence = finalConfidence(bestSim, gemini.confidence);
+    const type = classify(confidence);
     const mod  = gemini.transformations.length ? gemini.transformations.join(' + ') : _verdictToMod(gemini.verdict);
     const piracyDetected = type === 'piracy';
 

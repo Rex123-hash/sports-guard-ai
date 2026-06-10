@@ -4,6 +4,7 @@ const {
   assertSafePublicUrl,
   isPrivateAddress,
 } = require('../src/modules/urlSafety');
+const { finalConfidence, classify } = require('../src/modules/scoring');
 
 async function run(name, fn) {
   try {
@@ -47,6 +48,23 @@ async function main() {
       assert.equal(isPrivateAddress('192.168.1.10'), true);
       assert.equal(isPrivateAddress('8.8.8.8'), false);
       assert.equal(isPrivateAddress('::1'), true);
+    }),
+    run('weights the adjudication score 0.4 hash + 0.6 gemini', async () => {
+      assert.equal(finalConfidence(97, 96), 96);  // the guaranteed demo case
+      assert.equal(finalConfidence(100, 100), 100);
+      assert.equal(finalConfidence(0, 0), 0);
+      assert.equal(finalConfidence(80, 90), 86);  // 32 + 54
+    }),
+    run('buckets verdicts at the documented thresholds', async () => {
+      assert.equal(classify(85), 'piracy');
+      assert.equal(classify(84), 'review');
+      assert.equal(classify(70), 'review');
+      assert.equal(classify(69), 'clean');
+      assert.equal(classify(0), 'clean');
+    }),
+    run('hash similarity alone can never confirm piracy', async () => {
+      // Gemini unavailable → confidence caps at 40, always below review.
+      assert.equal(classify(finalConfidence(100, 0)), 'clean');
     }),
   ]);
 

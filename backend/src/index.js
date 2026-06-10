@@ -21,8 +21,10 @@ const PORT = process.env.PORT || 8080;
 // Trust the Cloud Run proxy so rate limiting sees the real client IP.
 app.set('trust proxy', 1);
 
+// ALLOWED_ORIGIN: '*' (default) or a comma-separated allowlist of origins.
+const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN || '*',
+  origin: allowedOrigin === '*' ? '*' : allowedOrigin.split(',').map(o => o.trim()),
   methods: ['GET', 'POST'],
 }));
 app.use(express.json());
@@ -40,7 +42,7 @@ app.use('/api', apiLimiter);
 // In-memory storage for uploaded files (multer)
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB — matches the Register page promise
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith('image/')) {
       return cb(new Error('Only image files are allowed'));
