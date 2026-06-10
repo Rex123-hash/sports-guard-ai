@@ -2,3 +2,7 @@ Pillow>=11,<13
 imageio>=2.34
 imageio-ffmpeg>=0.5
 yt-dlp>=2024.0
+# PO-token provider plugin for yt-dlp; only active when YTDLP_POT_BASE_URL is set
+# (see video/YOUTUBE.md). Harmless otherwise — lets the YouTube deep path use a
+# bgutil provider to satisfy YouTube's proof-of-origin requirement.
+bgutil-ytdlp-pot-provider>=1.0

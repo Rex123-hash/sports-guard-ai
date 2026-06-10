@@ -81,7 +81,7 @@ export default function VideoCheck({ assets, onDetection }) {
       if (/moov|invalid data|could not extract|extract frames|no frames/i.test(m)) {
         friendly = "This video couldn't be read. It may be incomplete, still downloading, larger than the 80 MB limit, or in an unsupported format. Re-save it as a standard MP4 (H.264) or try a different clip.";
       } else if (/youtube|download|proxy|not available|unavailable|geo|blocked/i.test(m)) {
-        friendly = "Couldn't download that video. YouTube is usually blocked from cloud servers (other platforms can occasionally fail too). Easiest fix: upload the file, or use a direct .mp4 link.";
+        friendly = "Couldn't read that link. For YouTube we try a full download and fall back to public thumbnails, but private/age-restricted/region-locked videos can still fail. Easiest fix: upload the file, or use a direct .mp4 link.";
       }
       alert('Video check failed: ' + friendly);
       setPhase('idle');
@@ -126,7 +126,7 @@ export default function VideoCheck({ assets, onDetection }) {
       <div className="card mb-6 fade-up delay-2" style={{ border: '2px solid var(--pine)' }}>
         <div style={{ background: 'var(--pine)', color: '#fff', padding: '10px 22px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--butter)' }}>{Icon.info}</span>
-          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and most platform links (Instagram, X, …) work. <strong>YouTube</strong> is often blocked from cloud servers; upload the file for those.
+          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and platform links (<strong>YouTube</strong>, Instagram, X, …) all work. If YouTube refuses a full download from the cloud, we automatically fall back to scanning its public thumbnail frames.
         </div>
         <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 22px', gap: 10 }}>
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>VIDEO URL</span>
@@ -170,6 +170,11 @@ export default function VideoCheck({ assets, onDetection }) {
           {phase === 'done' && verdict && (
             <div className="mono mt-3" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>
               scanned {verdict.framesScanned ?? '-'} keyframes · source: {verdict.sourceKind || '-'}
+              {/thumbnail/i.test(verdict.sourceKind || '') && (
+                <div style={{ marginTop: 4, color: 'var(--coral)' }}>
+                  ⚠ lighter scan: YouTube blocked the full download, so only its public thumbnail frames were checked.
+                </div>
+              )}
             </div>
           )}
         </div>

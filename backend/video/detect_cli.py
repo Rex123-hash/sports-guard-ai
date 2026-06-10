@@ -22,8 +22,7 @@ import argparse
 import urllib.request
 
 from sg_video.hashing import dhash, similarity
-from sg_video.frames import extract_keyframes
-from sg_video.acquire import acquire
+from sg_video.acquire import acquire_frames
 from PIL import Image
 
 API_BASE = os.environ.get("SG_API_BASE", "https://sportsguard-api-712383807173.us-central1.run.app")
@@ -88,11 +87,8 @@ def main():
         registry = build_registry(assets)
         log(f"registry: {len(registry)} assets")
 
-        path, how = acquire(args.source)
-        log(f"acquired via {how}: {path}")
-
-        frames = extract_keyframes(path, every_seconds=args.every)
-        log(f"keyframes: {len(frames)}")
+        frames, how = acquire_frames(args.source, every_seconds=args.every)
+        log(f"acquired via {how}: {len(frames)} frames")
 
         best = None
         for ts, img in frames:
