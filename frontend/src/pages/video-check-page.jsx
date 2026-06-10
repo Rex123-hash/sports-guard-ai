@@ -126,7 +126,7 @@ export default function VideoCheck({ assets, onDetection }) {
       <div className="card mb-6 fade-up delay-2" style={{ border: '2px solid var(--pine)' }}>
         <div style={{ background: 'var(--pine)', color: '#fff', padding: '10px 22px', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ color: 'var(--butter)' }}>{Icon.info}</span>
-          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and platform links (<strong>YouTube</strong>, Instagram, X, …) all work. If YouTube refuses a full download from the cloud, we automatically fall back to scanning its public thumbnail frames.
+          <strong>Tip:</strong> uploads, direct <strong>.mp4</strong> links, and most platform links (Instagram, X, …) work. <strong>YouTube</strong> is often blocked from cloud servers; upload the file for those.
         </div>
         <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 22px', gap: 10 }}>
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>VIDEO URL</span>
