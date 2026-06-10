@@ -1005,7 +1005,8 @@ body {
 /* DETECTION ROW */
 .det-row {
   display: grid;
-  grid-template-columns: 88px 54px minmax(0, 1fr) 104px 104px 100px 22px;
+  /* URL + confidence columns flex so the URL never collapses on ~1280px laptops */
+  grid-template-columns: 88px 54px minmax(0, 1.6fr) minmax(64px, 0.7fr) minmax(64px, 0.7fr) 100px 22px;
   align-items: center;
   padding: 14px 22px;
   border-bottom: 1px solid var(--line-2);

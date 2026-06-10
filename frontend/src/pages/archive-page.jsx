@@ -129,6 +129,15 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
   );
 }
 
+// Real image when a usable URL exists; placeholder when it's missing or fails
+// to load (e.g. suspect "upload: clip.mp4" labels or expired remote links).
+function FrameImage({ src, alt, tone, label, frame }) {
+  const [failed, setFailed] = useState(false);
+  const usable = src && /^(https?:|data:image)/i.test(src) && !failed;
+  if (!usable) return <Placeholder tone={tone} label={label} frame={frame}/>;
+  return <img src={src} alt={alt} onError={() => setFailed(true)} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>;
+}
+
 export function Drawer({ detection, assets, onClose, onReview }) {
   if (!detection) return null;
   const asset = assets.find(a => a.id === detection.assetId);
@@ -160,14 +169,14 @@ export function Drawer({ detection, assets, onClose, onReview }) {
           <div className="grid grid-2 gap-3 mt-6">
             <div className="frame">
               <div className="frame-img" style={{ aspectRatio: '4/3' }}>
-                <Placeholder tone="pine" label={asset?.sport.toUpperCase().slice(0, 3)} frame={asset?.frame}/>
+                <FrameImage src={asset?.imageUrl} alt="registered original" tone="pine" label={(asset?.sport || '').toUpperCase().slice(0, 3)} frame={asset?.frame}/>
                 <span className="frame-tag tag solid-moss">REGISTERED</span>
               </div>
               <div className="frame-cap"><span>{asset?.title}</span><span>{asset?.owner}</span></div>
             </div>
             <div className="frame">
               <div className="frame-img" style={{ aspectRatio: '4/3' }}>
-                <Placeholder tone="coral" label="SUSPECT" frame="REMOTE"/>
+                <FrameImage src={detection.matchedFrame || detection.url} alt="suspect source" tone="coral" label="SUSPECT" frame="REMOTE"/>
                 <span className={`frame-tag tag ${detection.type === 'piracy' ? 'solid-coral' : 'butter'}`}>SUSPECT</span>
               </div>
               <div className="frame-cap"><span>mod: {detection.mod}</span><span>{detection.detected}</span></div>

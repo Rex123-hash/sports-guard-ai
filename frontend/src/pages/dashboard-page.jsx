@@ -6,11 +6,9 @@ export default function Dashboard({ assets, detections, stats, search = '', onOp
 
   const byType = filter === 'all' ? detections : detections.filter(d => d.type === filter);
   const filtered = byType.filter(d => matchesQuery(d, search));
-  const scansDone = Math.max(detections.length, stats?.totalDetections || 0);
+  const detectionsLogged = Math.max(detections.length, stats?.totalDetections || 0);
   const threatsDetected = detections.filter(d => d.type === 'piracy').length;
   const reviewQueue = detections.filter(d => d.type === 'review').length;
-  const cleanScans = detections.filter(d => d.type === 'clean').length;
-  const successRate = detections.length === 0 ? 0 : Math.round((cleanScans / detections.length) * 100);
 
   const sourceBreakdown = useMemo(() => {
     const counts = {};
@@ -62,10 +60,10 @@ export default function Dashboard({ assets, detections, stats, search = '', onOp
 
       <div className="hero-grid">
         {[
-          { label: 'Total Scans Executed', value: scansDone, delta: scansDone > 0 ? 'Live' : 'No scans yet', dir: 'up', spark: detections.length > 0 ? detections.map((_, i) => i + 1) : [0, 0, 0, 0], color: 'var(--sky)' },
-          { label: 'Piracy Threats', value: threatsDetected, delta: reviewQueue > 0 ? `${reviewQueue} in review` : 'Action required', dir: 'up', spark: detections.filter(d => d.type !== 'clean').map((_, i) => i + 1).concat(detections.filter(d => d.type !== 'clean').length ? [] : [0, 0, 0, 0]), color: 'var(--coral)' },
+          { label: 'Detections Logged', value: detectionsLogged, delta: detectionsLogged > 0 ? 'All time' : 'No detections yet', dir: 'up', spark: detections.length > 0 ? detections.map((_, i) => i + 1) : [0, 0, 0, 0], color: 'var(--sky)' },
+          { label: 'Piracy Confirmed', value: threatsDetected, delta: threatsDetected > 0 ? 'Action required' : 'Nothing flagged', dir: 'up', spark: detections.filter(d => d.type === 'piracy').map((_, i) => i + 1).concat(detections.filter(d => d.type === 'piracy').length ? [] : [0, 0, 0, 0]), color: 'var(--coral)' },
           { label: 'Assets Protected', value: Math.max(assets.length, stats?.totalAssets || 0), delta: assets.length > 0 ? 'Fully active' : 'Awaiting registry', dir: 'up', spark: assets.map((_, i) => i + 1).concat(assets.length ? [] : [0, 0, 0, 0]), color: 'var(--moss)' },
-          { label: 'Clean Rate', value: successRate, delta: detections.length > 0 ? `${cleanScans} clean checks` : 'System warming up', dir: 'up', spark: detections.map(d => (d.type === 'clean' ? 1 : 0)).concat(detections.length ? [] : [0, 0, 0, 0]), color: 'var(--pine)', suffix: '%' },
+          { label: 'In Review Queue', value: reviewQueue, delta: reviewQueue > 0 ? 'Awaiting human check' : 'Queue clear', dir: 'up', spark: detections.filter(d => d.type === 'review').map((_, i) => i + 1).concat(detections.filter(d => d.type === 'review').length ? [] : [0, 0, 0, 0]), color: 'var(--pine)' },
         ].map((s, i) => (
           <div key={s.label} className={`stat fade-up delay-${i + 1}`}>
             <div className="stat-label"><span className="dot" style={{ background: s.color }} />{s.label}</div>
@@ -121,7 +119,7 @@ export default function Dashboard({ assets, detections, stats, search = '', onOp
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
           <div className="card fade-up delay-3">
-            <div className="card-head"><h3>Threat by sport</h3><span className="mono" style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '0.12em' }}>30 DAYS</span></div>
+            <div className="card-head"><h3>Threat by sport</h3><span className="mono" style={{ fontSize: 10, color: 'var(--ink-mute)', letterSpacing: '0.12em' }}>ALL TIME</span></div>
             <div className="card-pad">
               {breakdown.length === 0 ? (
                 <div className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', padding: '10px 0' }}>

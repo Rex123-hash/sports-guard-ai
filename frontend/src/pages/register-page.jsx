@@ -37,6 +37,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
 
   async function commit() {
     if (!file) return;
+    if (!meta.owner.trim() || !meta.title.trim()) { alert('Please fill in the rights holder and title first.'); return; }
     setStep('hashing');
     try {
       if (mode === 'video') {
@@ -145,9 +146,11 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
               <div className="grid grid-2 gap-4">
                 <div className="field">
                   <label className="field-label">Rights holder</label>
-                  <select className="select" value={meta.owner} onChange={e => setMeta({ ...meta, owner: e.target.value })}>
-                    {RIGHTS_HOLDERS.map(r => <option key={r}>{r}</option>)}
-                  </select>
+                  <input className="input" list="rights-holders" value={meta.owner} placeholder="Your organisation"
+                    onChange={e => setMeta({ ...meta, owner: e.target.value })}/>
+                  <datalist id="rights-holders">
+                    {RIGHTS_HOLDERS.map(r => <option key={r} value={r}/>)}
+                  </datalist>
                 </div>
                 <div className="field">
                   <label className="field-label">Sport</label>

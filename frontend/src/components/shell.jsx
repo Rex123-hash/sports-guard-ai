@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Counter, Sparkline, Icon } from './primitives.jsx';
 
-export function Sidebar({ page, onNav, totals, open, onClose }) {
+export function Sidebar({ page, onNav, totals, detections = [], open, onClose }) {
+  // Real trend data: confidence of the last 12 detections, oldest → newest.
+  const sparkValues = detections.slice(0, 12).map(d => d.confidence || 0).reverse();
   const items = [
     { id: 'landing', label: 'Home', sc: 'H', icon: Icon.home },
     { id: 'dashboard', label: 'Metrics', sc: 'D', icon: Icon.grid },
@@ -68,22 +70,24 @@ export function Sidebar({ page, onNav, totals, open, onClose }) {
         </div>
         <div style={{ padding: '0 14px' }}>
           <div className="sidebar-card">
-            <div className="small">Today · live</div>
+            <div className="small">All time</div>
             <div className="big">
               <Counter to={Number(totals?.totalDetections ?? totals?.detections ?? 0)} duration={1400} />
             </div>
             <div style={{ fontSize: 11, opacity: 0.85, marginTop: 4 }}>detections processed</div>
-            <div style={{ marginTop: 16, marginLeft: -16, marginRight: -16, marginBottom: -16 }}>
-              <Sparkline w={200} h={40} color="var(--moss)" values={[3, 5, 4, 7, 6, 9, 8, 11, 10, 14, 13, 18]} />
-            </div>
+            {sparkValues.length > 1 && (
+              <div style={{ marginTop: 16, marginLeft: -16, marginRight: -16, marginBottom: -16 }}>
+                <Sparkline w={200} h={40} color="var(--moss)" values={sparkValues} />
+              </div>
+            )}
           </div>
         </div>
         <div className="sidebar-foot">
           <span className="live-indicator">
             <span className="pulse-dot" />
-            STREAM LIVE
+            LIVE SYNC · 10s
           </span>
-          <span>EU-W-1</span>
+          <span>US-CENTRAL1</span>
         </div>
       </aside>
     </>

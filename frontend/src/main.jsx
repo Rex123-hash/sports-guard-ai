@@ -137,7 +137,7 @@ function App({ user }) {
 
   return (
     <div className="app">
-      <Sidebar page={page} onNav={setPage} totals={stats} open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
+      <Sidebar page={page} onNav={setPage} totals={stats} detections={detections} open={sidebarOpen} onClose={() => setSidebarOpen(false)}/>
       <main className="main">
         <Topbar now={now} onNav={setPage} page={page} user={user} onSignOut={handleSignOut} onMenuToggle={() => setSidebarOpen(v => !v)} search={search} onSearch={handleSearch}/>
         {page === 'landing'    && <Landing onNav={setPage}/>}

@@ -19,6 +19,7 @@ export default function CheckURL({ assets, onDetection }) {
   const [stepStatus, setStepStatus] = useState([]);
   const [verdict, setVerdict] = useState(null);
   const [suspectDims, setSuspectDims] = useState(null); // real WxH of the suspect image
+  const [elapsed, setElapsed] = useState(null);         // real end-to-end check time (s)
 
   const samples = [
     { url: DEMO_PIRACY_URL, label: 'Cricket · color-graded copy' },
@@ -28,8 +29,9 @@ export default function CheckURL({ assets, onDetection }) {
 
   async function run(u) {
     const target = u || url;
-    setUrl(target); setPhase('running'); setVerdict(null); setSuspectDims(null);
+    setUrl(target); setPhase('running'); setVerdict(null); setSuspectDims(null); setElapsed(null);
     setStepStatus(PIPELINE_STEPS.map(() => 'queued'));
+    const t0 = Date.now();
 
     let i = 0;
     const interval = setInterval(() => {
@@ -42,6 +44,7 @@ export default function CheckURL({ assets, onDetection }) {
       const result = await SG_API.check(target);
       clearInterval(interval);
       setStepStatus(PIPELINE_STEPS.map(() => 'done'));
+      setElapsed((Date.now() - t0) / 1000);
 
       const conf = result.finalConfidence || result.confidence || 0;
       const ph = result.phashSimilarity || result.phashSim || 0;
@@ -68,7 +71,7 @@ export default function CheckURL({ assets, onDetection }) {
     }
   }
 
-  function reset() { setPhase('idle'); setVerdict(null); setStepStatus([]); setSuspectDims(null); }
+  function reset() { setPhase('idle'); setVerdict(null); setStepStatus([]); setSuspectDims(null); setElapsed(null); }
 
   const verdictType = verdict?.type === 'piracy' ? 'piracy' : verdict?.type === 'review' ? 'warn' : 'clean';
   const verdictTitle = verdict?.type === 'piracy' ? 'Piracy confirmed' : verdict?.type === 'review' ? 'Inconclusive · queue review' : 'No match · clean';
@@ -121,7 +124,7 @@ export default function CheckURL({ assets, onDetection }) {
                   <div className="pipe-num">{status === 'done' ? '✓' : String(i + 1).padStart(2, '0')}</div>
                   <div><div className="pipe-name">{s.name}</div><div className="pipe-desc">{s.desc}</div></div>
                   <div>{status === 'active' && <span className="pipe-spinner"/>}</div>
-                  <div className="pipe-meta">{status === 'done' ? `${(s.dur / 1000).toFixed(2)}s · ok` : status === 'active' ? 'running' : 'queued'}</div>
+                  <div className="pipe-meta">{status === 'done' ? 'ok' : status === 'active' ? 'running' : 'queued'}</div>
                 </div>
               );
             })}
@@ -161,7 +164,7 @@ export default function CheckURL({ assets, onDetection }) {
                 <div>
                   <div className="verdict-title">{verdictTitle}</div>
                   <div className="verdict-headline">
-                    {verdict.type === 'piracy' && <>Cropped, filtered; same scene as<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
+                    {verdict.type === 'piracy' && <>{verdict.mod && !['—', '-'].includes(verdict.mod) ? verdict.mod.charAt(0).toUpperCase() + verdict.mod.slice(1) : 'Unauthorized copy'}; same scene as<br/>{verdict.asset?.title?.split(' · ')[0]}.</>}
                     {verdict.type === 'review' && 'Visual fragments overlap, but signal is partial.'}
                     {verdict.type === 'clean' && 'Nothing in the registry resembles this image.'}
                   </div>
@@ -237,7 +240,7 @@ export default function CheckURL({ assets, onDetection }) {
 
       <div className="attribution">
         <span>SportsGuard · Check</span>
-        <span>{phase === 'done' ? `analyzed in ${(PIPELINE_STEPS.reduce((a, s) => a + s.dur, 0) / 1000).toFixed(2)}s` : 'pipeline ready'}</span>
+        <span>{phase === 'done' && elapsed != null ? `analyzed in ${elapsed.toFixed(2)}s` : 'pipeline ready'}</span>
       </div>
     </div>
   );
