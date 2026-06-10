@@ -25,7 +25,6 @@ const provider = new GoogleAuthProvider();
 
 const subscribers = new Set();
 let firebaseObserverReady = false;
-let firebaseResolvedOnce = false;
 let lastFirebaseUser = auth.currentUser;
 
 function hasWindow() {
@@ -71,7 +70,6 @@ function ensureFirebaseObserver() {
 
   firebaseObserverReady = true;
   fbOnAuthStateChanged(auth, firebaseUser => {
-    firebaseResolvedOnce = true;
     lastFirebaseUser = firebaseUser;
     if (firebaseUser) {
       clearGuestSession();
@@ -124,15 +122,7 @@ export async function getIdToken() {
 export function onAuthStateChanged(callback) {
   ensureFirebaseObserver();
   subscribers.add(callback);
-
-  // Only deliver an initial state synchronously when we actually know it:
-  // Firebase has already resolved once, or a local guest session exists.
-  // Otherwise we wait for the Firebase observer's first emission so we don't
-  // flash the signed-out UI while a persisted session is still being restored
-  // from IndexedDB (the ~500ms login -> app "double refresh" on reload).
-  if (firebaseResolvedOnce || buildGuestUser()) {
-    callback(effectiveUser(lastFirebaseUser));
-  }
+  callback(effectiveUser(lastFirebaseUser));
 
   return () => {
     subscribers.delete(callback);
