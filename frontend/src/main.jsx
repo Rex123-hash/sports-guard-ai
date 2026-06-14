@@ -125,8 +125,10 @@ function App({ user }) {
 
   function handleSearch(value) {
     setSearch(value);
-    // Typing from a non-list page jumps to History so results are visible.
-    if (value && (page === 'landing' || page === 'guide')) setPage('detections');
+    // Dashboard, archive, and detections render search results in place. From
+    // any other page (landing, guide, scan, verify, register) jump to History
+    // so a typed query always shows results instead of doing nothing.
+    if (value && !['dashboard', 'archive', 'detections'].includes(page)) setPage('detections');
   }
 
   function handleReview(det) {
