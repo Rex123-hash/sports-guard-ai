@@ -67,7 +67,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
         <div>
           <span className="eyebrow fade-up">Step 02 · Register</span>
           <h1 className="page-title fade-up delay-1">Print a <em>fingerprint.</em></h1>
-          <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives recompression, resizing, and color shifts, then stake your claim to it permanently.</div>
+          <div className="page-sub fade-up delay-2">{mode === 'video' ? 'Upload a clip from your broadcast feed. We fingerprint every keyframe, so the whole clip is protected, resilient to recompression, resizing, and color shifts.' : 'Upload one frame from your broadcast feed. We compute a perceptual hash that survives recompression, resizing, and color shifts, then stake your claim to it permanently.'}</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
           REGISTRY · {assetCount} ASSETS<br/>BUCKET · sportsguard-assets

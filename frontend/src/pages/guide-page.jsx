@@ -45,7 +45,7 @@ export default function Guide({ onNav }) {
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Video Scanning</h3>
-              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Upload a clip, paste a direct .mp4, or drop an Instagram/X/YouTube link. A Python pipeline samples keyframes, fingerprints each, and Gemini adjudicates any protected frame hidden inside, with the exact timestamp it appears.</p>
+              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Upload a clip, paste a direct .mp4, or drop an Instagram/X link. A Python pipeline samples keyframes, fingerprints each, and Gemini adjudicates any protected frame hidden inside, with the exact timestamp it appears.</p>
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Frame Verification</h3>

@@ -41,7 +41,7 @@ export default function Landing({ onNav }) {
             Welcome to<br/>Sports<span style={{ color: 'var(--moss)' }}>Guard.</span>
           </h1>
           <div className="page-sub" style={{ margin: '0 auto', fontSize: 18, maxWidth: 640 }}>
-            The fastest way to protect your digital sports media.<br/>Register your official broadcast frames, and let our AI instantly<br/>verify any suspicious URLs to stop piracy in its tracks.
+            The fastest way to protect your digital sports media.<br/>Register your official frames and video clips, and let our AI<br/>catch unauthorized copies across images and video in seconds.
           </div>
         </div>
 

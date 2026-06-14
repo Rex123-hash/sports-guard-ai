@@ -15,7 +15,7 @@ export function Archive({ assets, search = '', onNav }) {
         <div>
           <span className="eyebrow fade-up">Archive · 05</span>
           <h1 className="page-title fade-up delay-1">Asset <em>registry.</em></h1>
-          <div className="page-sub fade-up delay-2">Every frame currently under SportsGuard watch: fingerprinted, filed, and continuously matched against any URL submitted to the system.</div>
+          <div className="page-sub fade-up delay-2">Every asset under SportsGuard watch: images and video clips, fingerprinted, filed, and matched against anything submitted to the system.</div>
         </div>
         <button className="btn primary fade-up delay-2" onClick={() => onNav('register')}>{Icon.upload}Register asset</button>
       </div>
@@ -94,7 +94,7 @@ export function DetectionLog({ detections, assets, search = '', onOpen }) {
         <div>
           <span className="eyebrow fade-up">Archive · 06</span>
           <h1 className="page-title fade-up delay-1">Detection <em>log.</em></h1>
-          <div className="page-sub fade-up delay-2">Permanent record of every URL the system has adjudicated: searchable, sortable, exportable for takedown filings.</div>
+          <div className="page-sub fade-up delay-2">Permanent record of every scan the system has adjudicated: searchable, sortable, exportable for takedown filings.</div>
         </div>
       </div>
       <div className="card fade-up delay-2">
