@@ -37,7 +37,7 @@ export default function Guide({ onNav }) {
           <div className="grid grid-2 gap-3">
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Asset Registration (image or video)</h3>
-              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Protect a single broadcast frame, or a whole clip where every keyframe is fingerprinted. The 64-bit perceptual hash survives cropping, compression, and color shifts.</p>
+              <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: 0 }}>Protect a single broadcast frame, or a whole clip where every keyframe is fingerprinted. The 64-bit perceptual hash survives compression, resizing, and color shifts.</p>
             </div>
             <div className="card card-pad">
               <h3 style={{ fontFamily: 'Outfit', fontSize: 18, margin: '0 0 8px 0' }}>Image URL Scanning</h3>

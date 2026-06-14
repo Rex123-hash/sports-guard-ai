@@ -67,7 +67,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
         <div>
           <span className="eyebrow fade-up">Step 02 · Register</span>
           <h1 className="page-title fade-up delay-1">Print a <em>fingerprint.</em></h1>
-          <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives cropping, filtering, and recompression, then stake your claim to it permanently.</div>
+          <div className="page-sub fade-up delay-2">Upload one frame from your broadcast feed. We compute a perceptual hash that survives recompression, resizing, and color shifts, then stake your claim to it permanently.</div>
         </div>
         <div className="mono fade-up delay-2" style={{ fontSize: 11, color: 'var(--ink-mute)', textAlign: 'right', letterSpacing: '0.08em' }}>
           REGISTRY · {assetCount} ASSETS<br/>BUCKET · sportsguard-assets
@@ -129,7 +129,7 @@ export default function Register({ onRegistered, onNav, assetCount = 0 }) {
             <div className="mt-6 fade-up">
               <div className="eyebrow mb-2">{mode === 'video' ? 'Protected keyframes' : 'Perceptual fingerprint'}</div>
               <div className="hash-block">
-                <div className="hash-label mb-2">{mode === 'video' ? `dHash:64 · ${frameCount} keyframe${frameCount === 1 ? '' : 's'} fingerprinted` : 'dHash:64 · cropping-resilient'}</div>
+                <div className="hash-label mb-2">{mode === 'video' ? `dHash:64 · ${frameCount} keyframe${frameCount === 1 ? '' : 's'} fingerprinted` : 'dHash:64 · recompression-resilient'}</div>
                 {hash}
               </div>
               <div className="mono mt-3" style={{ fontSize: 10.5, color: 'var(--ink-mute)' }}>

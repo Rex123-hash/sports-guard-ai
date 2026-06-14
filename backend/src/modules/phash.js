@@ -3,7 +3,7 @@ const sharp = require('sharp');
 /**
  * Generates a difference hash (dHash) for an image buffer.
  * dHash compares adjacent pixel brightness across 9×8 grid → 64-bit fingerprint.
- * Robust to: cropping, color filters, brightness/contrast changes, JPEG recompression.
+ * Robust to: color filters, brightness/contrast changes, resizing, JPEG recompression.
  *
  * @param {Buffer} imageBuffer - Raw image bytes
  * @returns {Promise<string>} 16-character hex hash (64 bits)

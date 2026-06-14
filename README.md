@@ -206,7 +206,7 @@ timestamped verdict · evidence report · DMCA draft
 ## Features
 
 ### Asset Registration
-Upload an official broadcast frame. Cloud Vision runs a content safety check, then a 64-bit difference hash (dHash) is computed via 9×8 grayscale adjacent-pixel comparison. Gemini 2.5 Flash generates an image description. All three run in parallel before the asset is saved to Firestore + Cloud Storage. The dHash fingerprint survives JPEG recompression, cropping, brightness/contrast shifts, and minor watermark overlays.
+Upload an official broadcast frame. Cloud Vision runs a content safety check, then a 64-bit difference hash (dHash) is computed via 9×8 grayscale adjacent-pixel comparison. Gemini 2.5 Flash generates an image description. All three run in parallel before the asset is saved to Firestore + Cloud Storage. The dHash fingerprint survives JPEG recompression, resizing, brightness/contrast shifts, and minor watermark overlays.
 
 ### URL Piracy Detection
 Paste any public image URL. Backend SSRF-guards the URL (`assertSafePublicUrl`), fetches the image, computes its dHash, runs Hamming-distance search across all registered assets in Firestore, then sends the best match (≥ 80% similarity) to Gemini 2.5 Flash on Vertex AI for multimodal adjudication. Cloud Vision is **not** called in this route.
