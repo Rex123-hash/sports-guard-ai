@@ -96,7 +96,7 @@ Sign in with Google or pick **Continue as Guest** to skip auth and try the full 
 The Metrics page now reflects live Firestore-backed assets and detections instead of seeded example domains or placeholder counts.
 
 <p align="center">
-  <img src="docs/images/dashboard.png?v=2" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
+  <img src="docs/images/dashboard.png?v=3" alt="SportsGuard dashboard with sidebar navigation, action cards, and live stream indicator" width="100%" />
 </p>
 
 ---
