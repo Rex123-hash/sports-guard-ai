@@ -1246,14 +1246,16 @@ body {
 
 /* FADE UP */
 @keyframes fadeUp {
-  from { opacity: 0.001; transform: translateY(10px); }
+  from { opacity: 0.001; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fadeUp 0.55s cubic-bezier(0.2, 0.7, 0.1, 1) forwards; }
-.fade-up.delay-1 { animation-delay: 0.08s; }
-.fade-up.delay-2 { animation-delay: 0.16s; }
-.fade-up.delay-3 { animation-delay: 0.24s; }
-.fade-up.delay-4 { animation-delay: 0.32s; }
+.fade-up { animation: fadeUp 0.25s ease-out forwards; }
+/* No stagger: every element fades in together the instant the page mounts, so
+   switching pages is one quick fade, not a slow ~1s cascading reveal. */
+.fade-up.delay-1,
+.fade-up.delay-2,
+.fade-up.delay-3,
+.fade-up.delay-4 { animation-delay: 0s; }
 
 /* attribution */
 .attribution {
