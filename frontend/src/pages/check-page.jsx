@@ -14,7 +14,7 @@ function asList(value) {
 const DEMO_PIRACY_URL = 'https://storage.googleapis.com/sportsguard-assets/suspected/demo-cricket-cropped.jpg';
 
 export default function CheckURL({ assets, onDetection }) {
-  const [url, setUrl] = useState(DEMO_PIRACY_URL);
+  const [url, setUrl] = useState('');
   const [phase, setPhase] = useState('idle');
   const [stepStatus, setStepStatus] = useState([]);
   const [verdict, setVerdict] = useState(null);
@@ -98,7 +98,7 @@ export default function CheckURL({ assets, onDetection }) {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 22px', gap: 10 }}>
           <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', letterSpacing: '0.14em', fontWeight: 600 }}>IMAGE URL</span>
-          <input className="input mono" value={url} onChange={e => setUrl(e.target.value)} disabled={phase === 'running'}
+          <input className="input mono" value={url} onChange={e => setUrl(e.target.value)} placeholder="Paste a direct image URL (.jpg, .png, ...)" disabled={phase === 'running'}
             style={{ flex: 1, border: 'none', background: 'transparent', fontSize: 14, padding: '12px 8px', outline: 'none', boxShadow: 'none' }}/>
           {phase === 'idle' && <button className="btn coral lg" onClick={() => run()}>{Icon.bolt}Run check</button>}
           {phase === 'running' && <button className="btn lg" disabled><span className="pipe-spinner"/>Analyzing…</button>}
