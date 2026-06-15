@@ -23,10 +23,6 @@ firestore-debug.log
 .DS_Store
 Thumbs.db
 
-# Claude Code (dev tool — never deploy)
-.claude/
-frontend/.claude/
-
 # Python (embedded video pipeline)
 **/__pycache__/
 *.pyc
