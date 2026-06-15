@@ -267,6 +267,19 @@ export default function VideoCheck({ assets, onDetection }) {
         </div>
       )}
 
+      {phase === 'done' && verdict?.type === 'piracy' && (
+        <div className="card mt-6 fade-up">
+          <div className="card-head"><h3>DMCA takedown draft</h3></div>
+          <div className="card-pad-lg">
+            <pre className="hash-block" style={{ whiteSpace: 'pre-wrap', margin: 0 }}>{dmcaNotice}</pre>
+            <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
+              <button className="btn coral" onClick={() => copyTextToClipboard(dmcaNotice)}>{Icon.copy}Issue takedown</button>
+              <button className="btn" onClick={() => downloadTextFile(`sportsguard-dmca-${Date.now()}.txt`, dmcaNotice)}>{Icon.doc}Download notice</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="attribution">
         <span>SportsGuard · Scan Video</span>
         <span>Python keyframes + dHash · Gemini 2.5 Flash adjudication</span>
